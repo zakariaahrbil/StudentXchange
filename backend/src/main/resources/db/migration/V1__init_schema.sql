@@ -1,0 +1,11 @@
+create table profiles (updated_at timestamp(6) with time zone not null, user_id uuid not null, avatar_url varchar(255), bio TEXT, first_name varchar(255) not null, last_name varchar(255) not null, university varchar(255), primary key (user_id));
+create table skills (id uuid not null, name varchar(255) not null unique, primary key (id));
+create table user_skills (skill_id uuid not null, user_id uuid not null, primary key (skill_id, user_id));
+create table users (created_at timestamp(6) with time zone not null, id uuid not null, email varchar(255) not null unique, password_hash varchar(255) not null, role varchar(255) not null check ((role in ('ADMIN','STUDENT'))), status varchar(255) not null check ((status in ('ACTIVE','SUSPENDED'))), primary key (id));
+create table wallet_transactions (amount bigint not null, balance_after bigint not null, created_at timestamp(6) with time zone not null, id uuid not null, wallet_id uuid not null, type varchar(255) not null check ((type in ('WELCOME_BONUS','HOLD','RELEASE','REFUND','EARN'))), primary key (id));
+create table wallets (balance bigint not null, held_balance bigint not null, version bigint not null, id uuid not null, user_id uuid not null unique, primary key (id));
+alter table if exists profiles add constraint FK410q61iev7klncmpqfuo85ivh foreign key (user_id) references users;
+alter table if exists user_skills add constraint FKh223y61gwijpgqt6nlsuti07g foreign key (skill_id) references skills;
+alter table if exists user_skills add constraint FKro13if9r7fwkr5115715127ai foreign key (user_id) references users;
+alter table if exists wallet_transactions add constraint FK8seu7b87ifqi09ghhssusmb0x foreign key (wallet_id) references wallets;
+alter table if exists wallets add constraint FKc1foyisidw7wqqrkamafuwn4e foreign key (user_id) references users;

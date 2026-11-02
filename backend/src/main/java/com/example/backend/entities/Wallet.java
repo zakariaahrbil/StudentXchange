@@ -32,7 +32,7 @@ public class Wallet {
     @Column(nullable = false)
     private Long heldBalance = 0L;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "wallet")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "wallet", cascade = CascadeType.ALL)
     private List<WalletTransaction> transactions = new ArrayList<>();
 
     @Version
