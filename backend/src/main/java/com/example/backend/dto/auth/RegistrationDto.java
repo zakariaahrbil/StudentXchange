@@ -9,6 +9,9 @@ public record RegistrationDto(
         String email,
         String firstName,
         String lastName,
+        String university,
+        String bio,
+        String avatarUrl,
         long tokenBalance
 ) {
 
@@ -18,6 +21,9 @@ public record RegistrationDto(
                 user.getEmail(),
                 user.getProfile().getFirstName(),
                 user.getProfile().getLastName(),
+                user.getProfile().getUniversity(),
+                user.getProfile().getBio(),
+                user.getProfile().getAvatarUrl(),
                 user.getWallet().getBalance()
         );
     }

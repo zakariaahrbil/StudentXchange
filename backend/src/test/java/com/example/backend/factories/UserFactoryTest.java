@@ -11,34 +11,19 @@ class UserFactoryTest {
     private final UserFactory userFactory = new UserFactory();
 
     @Test
-    void createsUserAndProfileWithNormalizedValues() {
+    void createsUserWithNormalizedCredentials() {
         RegistrationPayload payload = new RegistrationPayload(
                 " Student@Example.COM ",
                 "password123",
                 " Younes ",
                 " Student ",
-                " University "
+                " University ", null, null
         );
 
         User user = userFactory.createFromRegistration(payload, "encoded");
 
         assertEquals("student@example.com", user.getEmail());
         assertEquals("encoded", user.getPasswordHash());
-        assertNotNull(user.getProfile());
-        assertSame(user, user.getProfile().getUser());
-        assertEquals("Younes", user.getProfile().getFirstName());
-        assertEquals("Student", user.getProfile().getLastName());
-        assertEquals("University", user.getProfile().getUniversity());
-    }
-
-    @Test
-    void convertsBlankUniversityToNull() {
-        RegistrationPayload payload = new RegistrationPayload(
-                "student@example.com", "password123", "Younes", "Student", "   "
-        );
-
-        User user = userFactory.createFromRegistration(payload, "encoded");
-
-        assertNull(user.getProfile().getUniversity());
+        assertNull(user.getProfile());
     }
 }

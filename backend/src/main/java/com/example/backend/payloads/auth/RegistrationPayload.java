@@ -9,6 +9,8 @@ public record RegistrationPayload(
         @NotBlank @Size(min = 8, max = 72) String password,
         @NotBlank @Size(max = 255) String firstName,
         @NotBlank @Size(max = 255) String lastName,
-        @Size(max = 255) String university
+        @Size(max = 255) String university,
+        @Size(max = 2000) String bio,
+        @Size(max = 255) String avatarUrl
 ){
 }

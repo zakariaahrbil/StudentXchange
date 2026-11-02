@@ -4,9 +4,12 @@ import com.example.backend.entities.Profile;
 import com.example.backend.entities.User;
 import com.example.backend.entities.Wallet;
 import com.example.backend.exceptions.EmailAlreadyRegisteredException;
+import com.example.backend.factories.ProfileFactory;
 import com.example.backend.factories.UserFactory;
+import com.example.backend.factories.WalletFactory;
 import com.example.backend.payloads.auth.RegistrationPayload;
 import com.example.backend.repositories.UserRepository;
+import com.example.backend.services.impl.RegistrationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,17 +35,21 @@ class RegistrationServiceTest {
     private UserFactory userFactory;
 
     @Mock
-    private WalletService walletService;
+    private ProfileFactory profileFactory;
+
+    @Mock
+    private WalletFactory walletFactory;
 
     private RegistrationService registrationService;
 
     @BeforeEach
     void setUp() {
-        registrationService = new RegistrationService(
+        registrationService = new RegistrationServiceImpl(
                 userRepository,
                 passwordEncoder,
                 userFactory,
-                walletService
+                profileFactory,
+                walletFactory
         );
     }
 
@@ -55,7 +62,8 @@ class RegistrationServiceTest {
         when(userRepository.existsByEmailIgnoreCase("student@example.com")).thenReturn(false);
         when(passwordEncoder.encode(" Password123 ")).thenReturn("encoded-password");
         when(userFactory.createFromRegistration(payload, "encoded-password")).thenReturn(user);
-        when(walletService.createWalletWithWelcomeBonus(user, 100L)).thenReturn(wallet);
+        when(profileFactory.createFromRegistration(payload, user)).thenReturn(user.getProfile());
+        when(walletFactory.createWithWelcomeBonus(user, 100L)).thenReturn(wallet);
         when(userRepository.save(user)).thenReturn(user);
 
         var result = registrationService.register(payload);
@@ -65,7 +73,8 @@ class RegistrationServiceTest {
         assertEquals("Younes", result.firstName());
         assertEquals("Student", result.lastName());
         verify(userFactory).createFromRegistration(payload, "encoded-password");
-        verify(walletService).createWalletWithWelcomeBonus(user, 100L);
+        verify(profileFactory).createFromRegistration(payload, user);
+        verify(walletFactory).createWithWelcomeBonus(user, 100L);
         verify(userRepository).save(user);
         assertSame(wallet, user.getWallet());
     }
@@ -78,7 +87,7 @@ class RegistrationServiceTest {
         assertThrows(EmailAlreadyRegisteredException.class,
                 () -> registrationService.register(payload));
 
-        verifyNoInteractions(passwordEncoder, userFactory, walletService);
+        verifyNoInteractions(passwordEncoder, userFactory, profileFactory, walletFactory);
         verify(userRepository, never()).save(any());
     }
 
@@ -89,12 +98,12 @@ class RegistrationServiceTest {
         when(passwordEncoder.encode("password123")).thenThrow(new IllegalStateException("encoder failed"));
 
         assertThrows(IllegalStateException.class, () -> registrationService.register(payload));
-        verifyNoInteractions(userFactory, walletService);
+        verifyNoInteractions(userFactory, profileFactory, walletFactory);
         verify(userRepository, never()).save(any());
     }
 
     private RegistrationPayload payload(String email, String password) {
-        return new RegistrationPayload(email, password, "Younes", "Student", "University");
+        return new RegistrationPayload(email, password, "Younes", "Student", "University", null, null);
     }
 
     private User userWithProfile() {

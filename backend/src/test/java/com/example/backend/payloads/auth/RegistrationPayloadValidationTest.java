@@ -27,7 +27,7 @@ class RegistrationPayloadValidationTest {
     @Test
     void acceptsValidPayload() {
         RegistrationPayload payload = new RegistrationPayload(
-                "student@example.com", "password123", "Younes", "Student", null
+                "student@example.com", "password123", "Younes", "Student", null, null, null
         );
 
         assertTrue(validator.validate(payload).isEmpty());
@@ -36,7 +36,7 @@ class RegistrationPayloadValidationTest {
     @Test
     void rejectsInvalidEmailAndShortPassword() {
         RegistrationPayload payload = new RegistrationPayload(
-                "invalid-email", "short", "Younes", "Student", null
+                "invalid-email", "short", "Younes", "Student", null, null, null
         );
 
         var violations = validator.validate(payload);
@@ -47,7 +47,7 @@ class RegistrationPayloadValidationTest {
 
     @Test
     void rejectsBlankRequiredFields() {
-        RegistrationPayload payload = new RegistrationPayload("", "password123", " ", "", null);
+        RegistrationPayload payload = new RegistrationPayload("", "password123", " ", "", null, null, null);
 
         var fields = validator.validate(payload).stream()
                 .map(v -> v.getPropertyPath().toString())
@@ -65,7 +65,9 @@ class RegistrationPayloadValidationTest {
                 "p".repeat(73),
                 "a".repeat(256),
                 "b".repeat(256),
-                "u".repeat(256)
+                "u".repeat(256),
+                "b".repeat(2001),
+                "a".repeat(256)
         );
 
         var violations = validator.validate(payload);
