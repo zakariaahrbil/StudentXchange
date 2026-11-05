@@ -24,7 +24,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register", "/actuator/health", "/error").permitAll()
+                        // TODO: restrict /api/admin/** to ADMIN role once JWT is configured
+                        .requestMatchers("/api/auth/register", "/api/admin/**", "/actuator/health", "/error").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
