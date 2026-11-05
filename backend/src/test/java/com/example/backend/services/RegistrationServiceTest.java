@@ -7,6 +7,7 @@ import com.example.backend.exceptions.EmailAlreadyRegisteredException;
 import com.example.backend.factories.UserFactory;
 import com.example.backend.payloads.auth.RegistrationPayload;
 import com.example.backend.repositories.UserRepository;
+import com.example.backend.services.impl.RegistrationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ class RegistrationServiceTest {
 
     @BeforeEach
     void setUp() {
-        registrationService = new RegistrationService(
+        registrationService = new RegistrationServiceImpl(
                 userRepository,
                 passwordEncoder,
                 userFactory,
