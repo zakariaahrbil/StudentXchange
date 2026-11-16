@@ -11,6 +11,7 @@ import {
   type UserProfile,
 } from "@/lib/api/auth";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
+import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useRouter } from "next/navigation";
 
 export const authKeys = {
@@ -20,16 +21,15 @@ export const authKeys = {
 
 export function useLoginMutation() {
   const queryClient = useQueryClient();
-  const router = useRouter()
+  const router = useRouter();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   return useMutation<AuthResponse, Error, LoginInput>({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("accessToken", data.accessToken);
-        router.push("/")
-      }
+      setAccessToken(data.accessToken);
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      router.push("/");
     },
   });
 }
@@ -42,23 +42,31 @@ export function useRegisterMutation() {
 
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
+  const signOut = useAuthStore((state) => state.signOut);
 
   return useMutation<void, Error, void>({
     mutationFn: logoutUser,
     onSuccess: () => {
-      if (typeof window !== "undefined") {
-        sessionStorage.removeItem("accessToken");
-      }
+      signOut();
       queryClient.setQueryData(authKeys.user(), null);
     },
   });
 }
 
 export function useCurrentUser() {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const setAuth = useAuthStore((state) => state.setAuth);
+
   return useQuery<UserProfile, Error>({
     queryKey: authKeys.user(),
-    queryFn: getCurrentUser,
-    enabled: typeof window !== "undefined" && !!sessionStorage.getItem("accessToken"),
+    queryFn: async () => {
+      const profile = await getCurrentUser();
+      if (accessToken) {
+        setAuth(profile, accessToken);
+      }
+      return profile;
+    },
+    enabled: !!accessToken,
     retry: false,
   });
 }

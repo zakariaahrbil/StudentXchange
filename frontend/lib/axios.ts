@@ -1,17 +1,16 @@
 import axios from "axios";
+import { useAuthStore } from "@/lib/hooks/useAuthStore";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080",
   headers: { "Content-Type": "application/json" },
-  withCredentials: true, 
+  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const accessToken = sessionStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
+  const token = useAuthStore.getState().accessToken;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -20,7 +19,7 @@ let isRefreshing = false;
 let failedQueue: {
   resolve: (token: string) => void;
   reject: (error: unknown) => void;
-}[] = []; 
+}[] = [];
 
 function processQueue(error: unknown, token: string | null) {
   failedQueue.forEach(({ resolve, reject }) => {
@@ -63,7 +62,8 @@ api.interceptors.response.use(
       );
 
       const newAccessToken = data.accessToken;
-      sessionStorage.setItem("accessToken", newAccessToken);
+
+      useAuthStore.getState().setAccessToken(newAccessToken);
 
       processQueue(null, newAccessToken);
 
@@ -71,7 +71,9 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      sessionStorage.removeItem("accessToken");
+
+      useAuthStore.getState().signOut();
+
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
