@@ -54,15 +54,16 @@ class RegistrationServiceTest {
     }
 
     @Test
-    void registerCreatesUserWithEncodedPasswordAndWelcomeWallet() {
+    void registerCreatesUserWithProfileAndEncodedPasswordAndWelcomeWallet() {
         RegistrationPayload payload = payload(" Student@Example.COM ", " Password123 ");
         User user = userWithProfile();
+        Profile profile = user.getProfile();
         Wallet wallet = new Wallet();
 
         when(userRepository.existsByEmailIgnoreCase("student@example.com")).thenReturn(false);
         when(passwordEncoder.encode(" Password123 ")).thenReturn("encoded-password");
         when(userFactory.createFromRegistration(payload, "encoded-password")).thenReturn(user);
-        when(profileFactory.createFromRegistration(payload, user)).thenReturn(user.getProfile());
+        when(profileFactory.createFromRegistration(payload, user)).thenReturn(profile);
         when(walletFactory.createWithWelcomeBonus(user, 100L)).thenReturn(wallet);
         when(userRepository.save(user)).thenReturn(user);
 
@@ -76,6 +77,7 @@ class RegistrationServiceTest {
         verify(profileFactory).createFromRegistration(payload, user);
         verify(walletFactory).createWithWelcomeBonus(user, 100L);
         verify(userRepository).save(user);
+        assertSame(profile, user.getProfile());
         assertSame(wallet, user.getWallet());
     }
 
