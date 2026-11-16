@@ -1,5 +1,9 @@
 import Image from "next/image";
 import React from "react";
+import { AuthGuard } from "@/lib/providers/AuthGuard";
+
+// Informs Next.js 16 that this segment is dynamically auth-gated
+export const instant = false;
 
 export default function DashboardLayout({
     children,
@@ -28,7 +32,7 @@ export default function DashboardLayout({
 
             <div className="flex flex-1">
                 <main className="flex-1 p-6 sm:p-8 max-w-7xl mx-auto w-full">
-                    {children}
+                    <AuthGuard>{children}</AuthGuard>
                 </main>
             </div>
         </div>

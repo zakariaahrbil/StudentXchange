@@ -3,15 +3,13 @@
 import Link from "next/link";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useLogoutMutation } from "@/lib/hooks/useAuth";
-import { AuthGuard } from "@/lib/providers/AuthGuard";
 
 export default function DashboardHomePage() {
   const user = useAuthStore((state) => state.userProfile);
   const { mutate: logout, isPending: isLoggingOut } = useLogoutMutation();
 
   return (
-    <AuthGuard>
-      <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8">
       {/* ── WELCOME BANNER ── */}
       <section className="bg-white border border-border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -111,6 +109,5 @@ export default function DashboardHomePage() {
         </div>
       </section>
     </div>
-    </AuthGuard>
   );
 }
