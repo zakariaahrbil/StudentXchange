@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
+import QueryProvider from "@/providers/QueryProvider";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
   description: "Exchange skills, grow together.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} h-full`}>
       <body className="min-h-full flex flex-col font-sans bg-white text-ink antialiased">
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
