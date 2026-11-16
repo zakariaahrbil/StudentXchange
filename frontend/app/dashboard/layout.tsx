@@ -2,9 +2,6 @@ import Image from "next/image";
 import React from "react";
 import { AuthGuard } from "@/lib/providers/AuthGuard";
 
-// Informs Next.js 16 that this segment is dynamically auth-gated
-export const instant = false;
-
 export default function DashboardLayout({
     children,
 }: {
