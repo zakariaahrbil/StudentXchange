@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuthStore } from "@/lib/hooks/useAuthStore";
 
 const steps = [
   {
@@ -20,6 +22,7 @@ const steps = [
 ];
 
 export default function Home() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return (
     <div className="flex flex-col min-h-screen w-full bg-white">
       {/* ── NAV ── */}
@@ -36,7 +39,7 @@ export default function Home() {
             StudentXchange
           </span>
         </div>
-        <div className="flex items-center gap-6">
+        {!isAuthenticated ? (<div className="flex items-center gap-6">
           <Link
             href="/auth"
             className="text-sm font-medium text-muted hover:text-ink transition-colors"
@@ -49,12 +52,23 @@ export default function Home() {
           >
             Get started
           </Link>
-        </div>
+        </div>) : (<div className="flex items-center gap-6">
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium text-muted hover:text-ink transition-colors"
+          >
+            Exchange now
+          </Link>
+          <Link
+            href="/auth?tab=register"
+            className="text-sm font-semibold px-5 py-2 bg-purple text-white hover:bg-[#3d39c0] transition-colors"
+          >
+            Sign out
+          </Link>
+        </div>)}
       </nav>
 
-      {/* ── MAIN ── */}
       <main className="flex flex-col flex-1">
-        {/* HERO */}
         <section className="flex flex-col items-center justify-center text-center px-6 py-20 sm:py-28">
           <span className="text-[11px] font-bold uppercase tracking-[0.12em] bg-mint text-ink px-3 py-1 mb-8 inline-block">
             Student skills marketplace
@@ -72,6 +86,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            {!isAuthenticated ? (<>
             <Link
               href="/auth?tab=register"
               className="w-full sm:w-auto text-center text-sm font-semibold px-6 py-3 bg-purple text-white hover:bg-[#3d39c0] transition-colors"
@@ -84,13 +99,18 @@ export default function Home() {
             >
               Sign in
             </Link>
+            </>):
+            (<Link
+              href="/dashboard"
+              className="w-full sm:w-auto text-center text-sm font-semibold px-6 py-3 bg-purple text-white hover:bg-[#3d39c0] transition-colors"
+            >
+              Go to dashboard
+            </Link>)}
           </div>
         </section>
 
-        {/* DIVIDER */}
         <div className="border-t border-border" />
 
-        {/* HOW IT WORKS */}
         <section className="w-full max-w-5xl mx-auto px-6 sm:px-8 py-20">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-faint mb-12">
             How it works
@@ -129,12 +149,18 @@ export default function Home() {
             </h2>
             <p className="text-sm text-muted">It takes less than a minute to join.</p>
           </div>
-          <Link
+          {!isAuthenticated ? <Link
             href="/auth?tab=register"
             className="text-sm font-semibold px-6 py-3 bg-mint text-ink hover:brightness-95 transition-all shrink-0"
           >
             Get started free →
-          </Link>
+          </Link> :
+          <Link
+            href="/dashboard"
+            className="text-sm font-semibold px-6 py-3 bg-mint text-ink hover:brightness-95 transition-all shrink-0"
+          >
+            Start Exchanging →  
+          </Link>}
         </section>
       </main>
 
