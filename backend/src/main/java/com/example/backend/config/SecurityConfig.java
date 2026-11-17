@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**", "/actuator/health", "/error").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/skills/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

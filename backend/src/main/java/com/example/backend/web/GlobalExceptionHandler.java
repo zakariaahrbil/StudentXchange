@@ -44,6 +44,14 @@ public class GlobalExceptionHandler {
         return response(HttpStatus.CONFLICT, exception.getMessage(), request);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorDto> handleSkillConflict(
+            IllegalArgumentException exception,
+            HttpServletRequest request
+    ) {
+        return response(HttpStatus.CONFLICT, exception.getMessage(), request);
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiErrorDto> handleBadCredentials(HttpServletRequest request) {
         return response(HttpStatus.UNAUTHORIZED, "Invalid email or password", request);
