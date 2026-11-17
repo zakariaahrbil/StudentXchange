@@ -17,7 +17,7 @@ export default function ProfilePage() {
       })
     : "Recently joined";
 
-  user ? console.log("User profile:", user) : console.log("User profile is null or undefined");
+
   return (
     <div className="flex flex-col gap-8 max-w-4xl">
       <div>

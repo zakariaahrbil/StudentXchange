@@ -22,14 +22,20 @@ export const authKeys = {
 export function useLoginMutation() {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setAuth = useAuthStore((state) => state.setAuth);
 
   return useMutation<AuthResponse, Error, LoginInput>({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-      setAccessToken(data.accessToken);
+    onSuccess: async (data) => {
+      useAuthStore.getState().setAccessToken(data.accessToken);
+      try {
+        const profile = await getCurrentUser();
+        setAuth(profile, data.accessToken);
+      } catch (err) {
+        console.error("Failed to load user profile on login:", err);
+      }
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
-      router.push("/");
+      router.push("/dashboard");
     },
   });
 }

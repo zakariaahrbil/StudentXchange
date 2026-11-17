@@ -7,14 +7,12 @@ import api from "../axios";
 import { getCurrentUser } from "../api/auth";
 
 export const useAuthInit = () => {
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const setLoading = useAuthStore((state) => state.setLoading);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
   useEffect(() => {
-    let isMounted = true;
+    let isCancelled = false;
 
     async function init() {
+      const { isAuthenticated, setAuth, setLoading, signOut } = useAuthStore.getState();
+
       if (!isAuthenticated) {
         try {
           const res = await axios.post<{ accessToken: string }>(
@@ -25,21 +23,20 @@ export const useAuthInit = () => {
 
           const { accessToken } = res.data;
 
-          if (isMounted) {
-            useAuthStore.getState().setAccessToken(accessToken);
-          }
+          // Set the access token so the Axios request interceptor attaches it
+          useAuthStore.getState().setAccessToken(accessToken);
 
           const userProfile = await getCurrentUser();
 
-          if (isMounted) {
+          if (!isCancelled) {
             setAuth(userProfile, accessToken);
           }
         } catch {
-          if (isMounted) {
-            useAuthStore.getState().signOut();
+          if (!isCancelled) {
+            signOut();
           }
         } finally {
-          if (isMounted) {
+          if (!isCancelled) {
             setLoading(false);
           }
         }
@@ -51,7 +48,7 @@ export const useAuthInit = () => {
     init();
 
     return () => {
-      isMounted = false;
+      isCancelled = true;
     };
-  }, [isAuthenticated, setAuth, setLoading]);
+  }, []);
 };
