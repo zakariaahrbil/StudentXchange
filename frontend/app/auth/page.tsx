@@ -2,18 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, redirect } from "next/navigation";
 import { Suspense } from "react";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
+import { useAuthStore } from "@/lib/hooks/useAuthStore";
+import { Loading } from "@/components/Loading";
 
 function AuthPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tab = searchParams.get("tab") === "register" ? "register" : "login";
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
 
   function switchTab(nextTab: "login" | "register") {
     router.replace(nextTab === "register" ? "/auth?tab=register" : "/auth");
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if(isAuthenticated && !isLoading) {
+    redirect("/dashboard");
   }
 
   return (
