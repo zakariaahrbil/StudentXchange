@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { AuthGuard } from "@/lib/providers/AuthGuard";
 import ProfileDropdown from "@/components/dashboard/ProfileDropdown";
+import FloatingNavbar from "@/components/dashboard/FloatingNavbar";
 
 export default function DashboardLayout({
     children,
@@ -10,7 +11,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="h-screen flex flex-col bg-[#FAFAFA] text-ink overflow-hidden">
+        <div className="h-screen flex flex-col bg-[#FAFAFA] text-ink overflow-hidden relative">
             <header className="h-16 shrink-0 w-full border-b border-border bg-white px-6 sm:px-8 flex items-center justify-between z-40">
                 <Link href="/dashboard" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
                     <Image
@@ -30,11 +31,13 @@ export default function DashboardLayout({
                 </div>
             </header>
 
-            <main className="flex-1 overflow-y-auto p-6 sm:p-8">
+            <main className="flex-1 overflow-y-auto p-6 sm:p-8 pb-28">
                 <div className="max-w-7xl mx-auto w-full">
                     <AuthGuard>{children}</AuthGuard>
                 </div>
             </main>
+
+            <FloatingNavbar />
         </div>
     );
 }
