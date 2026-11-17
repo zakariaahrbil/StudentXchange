@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useLogoutMutation } from "@/lib/hooks/useAuth";
+import SkillsSection from "@/components/dashboard/SkillsSection";
+import { useState } from "react";
 
 export default function ProfilePage() {
   const user = useAuthStore((state) => state.userProfile);
   const { mutate: logout, isPending: isLoggingOut } = useLogoutMutation();
+  const [showSkills, setShowSkills] = useState(false);
+
 
   const initials = `${user?.firstName?.[0] ?? "S"}${user?.lastName?.[0] ?? "X"}`.toUpperCase();
   const fullName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "Student User";
@@ -19,7 +23,7 @@ export default function ProfilePage() {
 
 
   return (
-    <div className="flex flex-col gap-8 max-w-4xl">
+    <div className="flex flex-col gap-8 max-w-4xl mx-auto">
       <div>
         <Link
           href="/dashboard"
@@ -40,9 +44,6 @@ export default function ProfilePage() {
             <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="text-[11px] font-bold uppercase tracking-wider bg-mint text-ink px-2.5 py-0.5">
                 Active Student
-              </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-muted px-2 py-0.5">
-                {user?.role ?? "STUDENT"}
               </span>
             </div>
 
@@ -65,7 +66,6 @@ export default function ProfilePage() {
         </button>
       </section>
 
-      {/* ── WALLET / CREDITS OVERVIEW ── */}
       <section className="bg-white border border-border p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -73,6 +73,7 @@ export default function ProfilePage() {
               Student Exchange Credits
             </span>
             <div className="mt-2 flex items-baseline gap-2">
+              {/* TODO: Replace with actual credits from user profile when available */}
               <span className="text-3xl sm:text-4xl font-bold text-ink">100</span>
               <span className="text-sm font-semibold text-purple">Tokens</span>
             </div>
@@ -82,15 +83,22 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="text-xs font-semibold bg-ink text-white px-4 py-2 hover:bg-ink/80 transition-colors"
+            <button
+              onClick={() => setShowSkills(!showSkills)}
+              type="button"
+              className={`text-xs font-semibold px-4 py-2 transition-colors cursor-pointer ${
+                showSkills
+                  ? "bg-[#FAFAFA] text-muted border border-border hover:bg-slate-100 hover:text-ink"
+                  : "bg-mint text-ink hover:bg-mint/80"
+              }`}
             >
-              Explore Skills
-            </Link>
+              {showSkills ? "Hide Skills" : "Explore Skills"}
+            </button>
           </div>
         </div>
       </section>
+
+      { showSkills &&  <SkillsSection />}
 
       {/* ── PERSONAL INFORMATION ── */}
       <section className="bg-white border border-border p-6 sm:p-8">
