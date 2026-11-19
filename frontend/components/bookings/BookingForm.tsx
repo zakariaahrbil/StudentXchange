@@ -108,13 +108,14 @@ export default function BookingForm({
             What do you need help with?
           </label>
           <span className="text-[11px] text-muted font-medium">
-            {descriptionValue.length}/500
+            {descriptionValue.length}/2000
           </span>
         </div>
 
         <textarea
           rows={4}
-          placeholder="e.g. Preparing for midterm exam on dynamic programming. I understand basic recursion but need help with memoization and bottom-up DP tables..."
+          maxLength={2000}
+          placeholder="e.g. Need assistance diagnosing a kitchen sink leak, checking pipe seals, or review Next.js API architecture..."
           {...register("description")}
           className="w-full px-3.5 py-2.5 bg-white border border-border text-sm text-ink outline-none focus:border-purple resize-none placeholder:text-muted/70"
         />

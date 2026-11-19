@@ -75,6 +75,7 @@ export interface Booking {
 
 export interface CreateBookingPayload {
   realizationAt: string;
+  description?: string;
 }
 
 export interface TutorSkillListing {
