@@ -16,6 +16,7 @@ public class ProfileFactory {
         profile.setUniversity(normalizeOptional(payload.university()));
         profile.setBio(normalizeOptional(payload.bio()));
         profile.setAvatarUrl(normalizeOptional(payload.avatarUrl()));
+        profile.setPhoneNumber(normalizeOptional(payload.phoneNumber()));
         return profile;
     }
 

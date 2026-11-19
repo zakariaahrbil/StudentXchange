@@ -39,6 +39,9 @@ public class Profile {
 
     private String avatarUrl;
 
+    @Column(name = "phone_number", length = 32)
+    private String phoneNumber;
+
     @UpdateTimestamp
     @Column(nullable = false)
     private Instant updatedAt;

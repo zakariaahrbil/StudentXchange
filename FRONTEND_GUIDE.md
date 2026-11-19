@@ -41,7 +41,8 @@ Content-Type: application/json
   "lastName": "Doe",
   "university": "University",
   "bio": "Computer science student",
-  "avatarUrl": "https://example.com/avatar.jpg"
+  "avatarUrl": "https://example.com/avatar.jpg",
+  "phoneNumber": "+212 600-000000"
 }
 ```
 
@@ -105,6 +106,14 @@ Authorization: Bearer <access-token>
 ```
 
 Cette route retourne l'utilisateur connecté.
+
+Le profil peut contenir un numéro de téléphone facultatif. Il pourra être utilisé
+comme moyen de communication entre les participants tant que la messagerie interne
+n'est pas disponible.
+
+Le frontend doit afficher ce numéro uniquement dans un contexte autorisé, par exemple
+sur le détail d'une réservation acceptée. Il ne faut pas l'afficher publiquement
+dans les résultats de recherche sans l'accord de l'utilisateur.
 
 ### Interceptor recommandé
 
@@ -470,6 +479,8 @@ Utiliser le format ISO lors de l'envoi à l'API.
 ## 10. Checklist frontend
 
 - [ ] Configurer `API_URL`.
+- [ ] Prévoir le champ facultatif `phoneNumber` dans le profil.
+- [ ] Afficher le numéro uniquement selon les règles de confidentialité du produit.
 - [ ] Configurer `withCredentials: true` pour le refresh token.
 - [ ] Ajouter l'access token dans `Authorization`.
 - [ ] Implémenter le refresh automatique après `401`.

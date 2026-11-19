@@ -56,7 +56,7 @@ class AuthControllerTest {
         when(registrationService.register(any(RegistrationPayload.class)))
                 .thenReturn(new RegistrationDto(
                         userId, "student@example.com", "Younes", "Student",
-                        "University", null, null, 100
+                        "University", null, null, null, 100
                 ));
 
         mockMvc.perform(post("/api/auth/register")

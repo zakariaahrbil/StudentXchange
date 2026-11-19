@@ -12,6 +12,7 @@ public record RegistrationDto(
         String university,
         String bio,
         String avatarUrl,
+        String phoneNumber,
         long tokenBalance
 ) {
 
@@ -24,6 +25,7 @@ public record RegistrationDto(
                 user.getProfile().getUniversity(),
                 user.getProfile().getBio(),
                 user.getProfile().getAvatarUrl(),
+                user.getProfile().getPhoneNumber(),
                 user.getWallet().getBalance()
         );
     }

@@ -15,7 +15,7 @@ class ProfileFactoryTest {
         User user = new User();
         RegistrationPayload payload = new RegistrationPayload(
                 "student@example.com", "password123", " Younes ", " Student ", " University ",
-                " Bio ", " https://example.com/avatar.png "
+                " Bio ", " https://example.com/avatar.png ", " +212 600-000000 "
         );
 
         var profile = profileFactory.createFromRegistration(payload, user);
@@ -26,16 +26,20 @@ class ProfileFactoryTest {
         assertEquals("University", profile.getUniversity());
         assertEquals("Bio", profile.getBio());
         assertEquals("https://example.com/avatar.png", profile.getAvatarUrl());
+        assertEquals("+212 600-000000", profile.getPhoneNumber());
     }
 
     @Test
-    void convertsBlankUniversityToNull() {
+    void convertsBlankOptionalFieldsToNull() {
         RegistrationPayload payload = new RegistrationPayload(
-                "student@example.com", "password123", "Younes", "Student", " ", " ", " "
+                "student@example.com", "password123", "Younes", "Student", " ", " ", " ", " "
         );
 
         var profile = profileFactory.createFromRegistration(payload, new User());
 
         assertNull(profile.getUniversity());
+        assertNull(profile.getBio());
+        assertNull(profile.getAvatarUrl());
+        assertNull(profile.getPhoneNumber());
     }
 }

@@ -105,7 +105,7 @@ class RegistrationServiceTest {
     }
 
     private RegistrationPayload payload(String email, String password) {
-        return new RegistrationPayload(email, password, "Younes", "Student", "University", null, null);
+        return new RegistrationPayload(email, password, "Younes", "Student", "University", null, null, null);
     }
 
     private User userWithProfile() {

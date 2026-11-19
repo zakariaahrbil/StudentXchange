@@ -76,6 +76,7 @@ Les champs facultatifs pourront être :
 - la biographie ;
 - la photo de profil ;
 - la localisation.
+- un numéro de téléphone facultatif pour la communication.
 
 Après l'inscription :
 
@@ -109,10 +110,16 @@ L'étudiant devra pouvoir :
 - modifier sa biographie ;
 - ajouter ou modifier son avatar ;
 - consulter les compétences qu'il propose ;
+- consulter ou modifier son numéro de téléphone ;
 - consulter sa note moyenne ;
 - consulter le nombre d'échanges terminés.
 
 Un profil public pourra afficher uniquement les informations autorisées par la plateforme.
+
+Le numéro de téléphone ne devra pas être affiché publiquement par défaut. Tant que
+la messagerie interne ne sera pas disponible, il pourra être communiqué au participant
+concerné dans le contexte d'une réservation autorisée, selon le consentement de
+l'utilisateur et les règles de confidentialité du produit.
 
 ## 4.4 Gestion des compétences
 
