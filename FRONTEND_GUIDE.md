@@ -145,10 +145,87 @@ Réponse :
   {
     "id": "skill-id",
     "name": "Java",
+    "description": "Cours et accompagnement en Java",
     "price": 25
   }
 ]
 ```
+
+### Description d'une compétence
+
+Une compétence peut contenir une description facultative de 2 000 caractères maximum.
+Elle est envoyée lors de la création ou de la modification :
+
+```json
+{
+  "name": "Java",
+  "description": "Cours et accompagnement en Java",
+  "price": 25
+}
+```
+
+### Avis sur une compétence
+
+Après une réservation terminée, l'acheteur peut laisser un avis sur le propriétaire :
+
+```http
+POST /api/skills/{skillId}/reviews
+Authorization: Bearer <access-token>
+Content-Type: application/json
+```
+
+```json
+{
+  "bookingId": "booking-id",
+  "rating": 5,
+  "comment": "Très bonne explication."
+}
+```
+
+L'avis est attaché à la compétence. Le `bookingId` sert uniquement à prouver que
+l'acheteur a bien réalisé un échange terminé pour cette compétence. Un seul avis est
+autorisé par échange et la note doit être comprise entre 1 et 5.
+Les avis publics d'une compétence sont disponibles avec :
+
+```http
+GET /api/skills/{skillId}/reviews
+```
+
+### Rechercher des utilisateurs par compétence
+
+Cette route permet de trouver les étudiants qui proposent une compétence donnée :
+
+```http
+GET /api/users/search?skill=java
+```
+
+La recherche est publique et ne nécessite pas d'access token.
+
+Réponse :
+
+```json
+[
+  {
+    "userId": "user-id",
+    "firstName": "Younes",
+    "lastName": "Student",
+    "university": "University",
+    "avatarUrl": null,
+    "phoneNumber": "+212 600-000000",
+    "skillId": "skill-id",
+    "skillName": "Java",
+    "skillDescription": "Java tutoring",
+    "skillPrice": 25,
+    "skillRating": 4.5
+  }
+]
+```
+
+La recherche est insensible à la casse et retourne une ligne par compétence correspondante.
+`skillRating` est la moyenne des notes reçues par cette compétence, sur 5. Une
+compétence sans avis retourne `0.0`.
+Le numéro de téléphone étant une donnée personnelle, l'interface doit l'afficher avec
+prudence et respecter les règles de confidentialité du produit.
 
 ### Créer une compétence
 

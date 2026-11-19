@@ -1,6 +1,7 @@
 package com.example.backend.web;
 
 import com.example.backend.dto.skill.SkillDto;
+import com.example.backend.dto.user.UserSkillSearchDto;
 import com.example.backend.payloads.skill.SkillPayload;
 import com.example.backend.security.JwtUserPrincipal;
 import com.example.backend.services.SkillService;
@@ -56,10 +57,33 @@ class SkillControllerTest {
     }
 
     @Test
+    void searchesUsersBySkill() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID skillId = UUID.randomUUID();
+        when(skillService.searchUsersBySkill("java"))
+                .thenReturn(List.of(new UserSkillSearchDto(
+                        userId, "Younes", "Student", "University", null,
+                        "+212 600-000000", skillId, "Java", "Java tutoring", 25L, 4.5
+                )));
+
+        mockMvc.perform(get("/api/users/search").param("skill", "java"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(userId.toString()))
+                .andExpect(jsonPath("$[0].firstName").value("Younes"))
+                .andExpect(jsonPath("$[0].lastName").value("Student"))
+                .andExpect(jsonPath("$[0].phoneNumber").value("+212 600-000000"))
+                .andExpect(jsonPath("$[0].skillId").value(skillId.toString()))
+                .andExpect(jsonPath("$[0].skillName").value("Java"))
+                .andExpect(jsonPath("$[0].skillDescription").value("Java tutoring"))
+                .andExpect(jsonPath("$[0].skillPrice").value(25))
+                .andExpect(jsonPath("$[0].skillRating").value(4.5));
+    }
+
+    @Test
     void attachesSkillForAuthenticatedPrincipal() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();
-        when(skillService.createForUser(userId, "Java", 25L))
+        when(skillService.createForUser(userId, "Java", null, 25L))
                 .thenReturn(new SkillDto(skillId, "Java", 25L));
 
         var result = controller.createForCurrentUser(
@@ -70,14 +94,14 @@ class SkillControllerTest {
         assertEquals(skillId, result.id());
         assertEquals("Java", result.name());
         assertEquals(25L, result.price());
-        verify(skillService).createForUser(userId, "Java", 25L);
+        verify(skillService).createForUser(userId, "Java", null, 25L);
     }
 
     @Test
     void alwaysUsesAuthenticatedPrincipalIdForAttachment() throws Exception {
         UUID authenticatedUserId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();
-        when(skillService.createForUser(authenticatedUserId, "Java", 25L))
+        when(skillService.createForUser(authenticatedUserId, "Java", null, 25L))
                 .thenReturn(new SkillDto(skillId, "Java", 25L));
 
         controller.createForCurrentUser(
@@ -85,7 +109,7 @@ class SkillControllerTest {
                 new SkillPayload("Java", 25L)
         );
 
-        verify(skillService).createForUser(authenticatedUserId, "Java", 25L);
+        verify(skillService).createForUser(authenticatedUserId, "Java", null, 25L);
     }
 
     @Test

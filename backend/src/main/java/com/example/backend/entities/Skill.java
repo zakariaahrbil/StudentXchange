@@ -27,6 +27,9 @@ public class Skill {
     @Column(nullable = false)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Column(nullable = false)
     private Long price;
 

@@ -129,6 +129,7 @@ Une compétence devra contenir au minimum :
 - un nom ;
 - une description ;
 - un prix en tokens ;
+- une description ;
 - une catégorie ;
 - un niveau ;
 - une durée estimée ;
@@ -161,6 +162,7 @@ Les catégories pourront inclure :
 - La comparaison des noms devra être insensible à la casse.
 - Le prix devra être strictement supérieur à zéro.
 - Le propriétaire sera le seul à pouvoir modifier ou supprimer sa compétence.
+- Une description facultative pourra expliquer le contenu de la compétence.
 - Un utilisateur ne pourra pas réserver sa propre compétence.
 - Une compétence indisponible ne devra pas pouvoir être réservée.
 - La suppression d'une compétence ayant des réservations devra respecter une règle définie : archivage recommandé plutôt que suppression définitive.
@@ -176,6 +178,8 @@ Les utilisateurs devront pouvoir :
 - filtrer par disponibilité ;
 - trier par prix ;
 - trier par note ;
+- afficher la note globale de chaque compétence, calculée comme la moyenne des
+  évaluations reçues, sur 5 ;
 - trier par date de publication ;
 - consulter les détails d'une compétence ;
 - consulter le profil de son propriétaire.
@@ -369,6 +373,7 @@ Après une réservation `COMPLETED`, l'acheteur pourra évaluer le propriétaire
 Une évaluation pourra contenir :
 
 - une note de 1 à 5 ;
+- une note globale de la compétence calculée à partir de toutes ses évaluations ;
 - un commentaire ;
 - une date ;
 - une référence vers la réservation.
@@ -455,10 +460,15 @@ GET    /api/users/{userId}/skills
 ```text
 GET    /api/skills
 GET    /api/skills/{skillId}
+GET    /api/users/search?skill={skillName}
 POST   /api/users/me/skills
 PUT    /api/users/me/skills/{skillId}
 DELETE /api/users/me/skills/{skillId}
 ```
+
+La recherche par compétence devra retourner les informations de base de l'étudiant
+et la compétence correspondante, notamment son nom, son prix et, lorsque cela est
+autorisé par les règles de confidentialité, son numéro de téléphone.
 
 ### Réservations
 
@@ -484,7 +494,7 @@ GET /api/users/me/wallet/transactions
 ```text
 GET  /api/bookings/{bookingId}/messages
 POST /api/bookings/{bookingId}/messages
-POST /api/bookings/{bookingId}/review
+POST /api/skills/{skillId}/reviews
 GET  /api/users/{userId}/reviews
 POST /api/bookings/{bookingId}/dispute
 GET  /api/users/me/disputes

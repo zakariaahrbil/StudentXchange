@@ -1,6 +1,7 @@
 package com.example.backend.web;
 
 import com.example.backend.dto.skill.SkillDto;
+import com.example.backend.dto.user.UserSkillSearchDto;
 import com.example.backend.payloads.skill.SkillPayload;
 import com.example.backend.security.JwtUserPrincipal;
 import com.example.backend.services.SkillService;
@@ -26,13 +27,20 @@ public class SkillController {
         return skillService.search(query);
     }
 
+    @GetMapping("/users/search")
+    public List<UserSkillSearchDto> searchUsersBySkill(@RequestParam String skill) {
+        return skillService.searchUsersBySkill(skill);
+    }
+
     @PostMapping("/users/me/skills")
     @ResponseStatus(HttpStatus.CREATED)
     public SkillDto createForCurrentUser(
             @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody SkillPayload payload
     ) {
-        return skillService.createForUser(principal.userId(), payload.name(), payload.price());
+        return skillService.createForUser(
+                principal.userId(), payload.name(), payload.description(), payload.price()
+        );
     }
 
     @PutMapping("/users/me/skills/{skillId}")
@@ -41,7 +49,9 @@ public class SkillController {
             @PathVariable java.util.UUID skillId,
             @Valid @RequestBody SkillPayload payload
     ) {
-        return skillService.updateForUser(principal.userId(), skillId, payload.name(), payload.price());
+        return skillService.updateForUser(
+                principal.userId(), skillId, payload.name(), payload.description(), payload.price()
+        );
     }
 
     @DeleteMapping("/users/me/skills/{skillId}")

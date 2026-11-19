@@ -5,6 +5,7 @@ import com.example.backend.entities.User;
 import com.example.backend.exceptions.ResourceNotFoundException;
 import com.example.backend.repositories.SkillRepository;
 import com.example.backend.repositories.UserRepository;
+import com.example.backend.repositories.ReviewRepository;
 import com.example.backend.services.impl.SkillServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,11 +29,14 @@ class SkillServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ReviewRepository reviewRepository;
+
     private SkillService skillService;
 
     @BeforeEach
     void setUp() {
-        skillService = new SkillServiceImpl(skillRepository, userRepository);
+        skillService = new SkillServiceImpl(skillRepository, userRepository, reviewRepository);
     }
 
     @Test
@@ -97,6 +102,24 @@ class SkillServiceTest {
                 ResourceNotFoundException.class,
                 () -> skillService.updateForUser(userId, UUID.randomUUID(), "Rust", 25L)
         );
+    }
+
+    @Test
+    void includesAverageSkillRatingInUserSearch() {
+        UUID skillId = UUID.randomUUID();
+        Skill skill = new Skill();
+        skill.setId(skillId);
+        skill.setName("Java");
+        skill.setPrice(25L);
+        skill.setOwner(user(UUID.randomUUID()));
+        when(skillRepository.findByNameContainingIgnoreCase("java")).thenReturn(List.of(skill));
+        when(reviewRepository.findAverageRatingBySkillId(skillId)).thenReturn(4.5);
+
+        var result = skillService.searchUsersBySkill("java");
+
+        assertEquals(1, result.size());
+        assertEquals(4.5, result.get(0).skillRating());
+        verify(reviewRepository).findAverageRatingBySkillId(skillId);
     }
 
     private User user(UUID id) {
