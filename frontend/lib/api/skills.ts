@@ -1,20 +1,82 @@
 import api from "../axios";
-import type { Skill } from "@/lib/types";
+import type {
+  Skill,
+  CreateSkillPayload,
+  UserSkillSearchDto,
+  ReviewDto,
+  CreateReviewPayload,
+} from "@/lib/types";
 
-export type { Skill };
+export type {
+  Skill,
+  CreateSkillPayload,
+  UserSkillSearchDto,
+  ReviewDto,
+  CreateReviewPayload,
+};
 
 export async function getSkills(query?: string): Promise<Skill[]> {
-    const res = await api.get<Skill[]>("/api/skills", {
-        params: query ? { query } : undefined,
-    });
-    return res.data;
+  const res = await api.get<Skill[]>("/api/skills", {
+    params: query ? { query } : undefined,
+  });
+  return res.data;
 }
 
-export async function createSkill(name: string):Promise<Skill> {
-    const res = await api.post<Skill>("/api/users/me/skills", { name });
-    return res.data;
+export async function createSkill(payload: string | CreateSkillPayload): Promise<Skill> {
+  const body = typeof payload === "string" ? { name: payload } : payload;
+  const res = await api.post<Skill>("/api/users/me/skills", body);
+  return res.data;
+}
+
+export async function updateSkill(
+  skillId: string,
+  payload: { name: string; description?: string; price?: number }
+): Promise<Skill> {
+  const res = await api.put<Skill>(`/api/users/me/skills/${skillId}`, payload);
+  return res.data;
 }
 
 export async function deleteSkill(skillId: string): Promise<void> {
-    await api.delete(`/api/users/me/skills/${skillId}`);
+  await api.delete(`/api/users/me/skills/${skillId}`);
+}
+
+export async function searchUsersBySkill(skill: string): Promise<UserSkillSearchDto[]> {
+  const res = await api.get<UserSkillSearchDto[]>("/api/users/search", {
+    params: { skill },
+  });
+  return res.data;
+}
+
+export async function getSkillReviews(skillId: string): Promise<ReviewDto[]> {
+  const res = await api.get<ReviewDto[]>(`/api/skills/${skillId}/reviews`);
+  return res.data;
+}
+
+export async function createSkillReview(
+  skillId: string,
+  payload: CreateReviewPayload
+): Promise<ReviewDto> {
+  const res = await api.post<ReviewDto>(`/api/skills/${skillId}/reviews`, payload);
+  return res.data;
+}
+
+
+export async function searchUsersBySkill(skill: string): Promise<UserSkillSearchDto[]> {
+  const res = await api.get<UserSkillSearchDto[]>("/api/users/search", {
+    params: { skill },
+  });
+  return res.data;
+}
+
+export async function getSkillReviews(skillId: string): Promise<ReviewDto[]> {
+  const res = await api.get<ReviewDto[]>(`/api/skills/${skillId}/reviews`);
+  return res.data;
+}
+
+export async function createSkillReview(
+  skillId: string,
+  payload: CreateReviewPayload
+): Promise<ReviewDto> {
+  const res = await api.post<ReviewDto>(`/api/skills/${skillId}/reviews`, payload);
+  return res.data;
 }

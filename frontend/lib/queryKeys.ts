@@ -16,4 +16,8 @@ export const queryKeys = {
     me: () => [...queryKeys.bookings.all, "me"] as const,
     detail: (id: string) => [...queryKeys.bookings.all, id] as const,
   },
+  reviews: {
+    all: ["reviews"] as const,
+    bySkill: (skillId: string) => [...queryKeys.reviews.all, "skill", skillId] as const,
+  },
 } as const;

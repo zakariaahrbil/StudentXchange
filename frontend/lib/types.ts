@@ -42,6 +42,13 @@ export interface UserProfile {
 export interface Skill {
   id: string;
   name: string;
+  description?: string | null;
+  price?: number;
+}
+
+export interface CreateSkillPayload {
+  name: string;
+  description?: string;
   price?: number;
 }
 
@@ -85,4 +92,35 @@ export interface TutorSkillListing {
   description?: string;
   rating?: number;
   reviewCount?: number;
+}
+
+export interface UserSkillSearchDto {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  university?: string | null;
+  avatarUrl?: string | null;
+  phoneNumber?: string | null;
+  skillId: string;
+  skillName: string;
+  skillDescription?: string | null;
+  skillPrice: number;
+  skillRating: number;
+}
+
+export interface ReviewDto {
+  id: string;
+  skillId: string;
+  bookingId: string;
+  reviewerId: string;
+  skillOwnerId: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+}
+
+export interface CreateReviewPayload {
+  bookingId: string;
+  rating: number;
+  comment?: string;
 }
