@@ -15,6 +15,7 @@ public record UserDto(
         String university,
         String avatarUrl,
         String phoneNumber,
+        Long tokenBalance,
         Role role,
         Status status,
         Instant createdAt
@@ -29,6 +30,7 @@ public record UserDto(
                 user.getProfile() != null ? user.getProfile().getUniversity() : null,
                 user.getProfile() != null ? user.getProfile().getAvatarUrl() : null,
                 user.getProfile() != null ? user.getProfile().getPhoneNumber() : null,
+                user.getWallet() != null ? user.getWallet().getBalance() : null,
                 user.getRole(),
                 user.getStatus(),
                 user.getCreatedAt()

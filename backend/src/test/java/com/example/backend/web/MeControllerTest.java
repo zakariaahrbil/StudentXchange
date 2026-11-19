@@ -39,6 +39,7 @@ class MeControllerTest {
                 "University",
                 null,
                 null,
+                100L,
                 com.example.backend.entities.Role.STUDENT,
                 com.example.backend.entities.Status.ACTIVE,
                 null
