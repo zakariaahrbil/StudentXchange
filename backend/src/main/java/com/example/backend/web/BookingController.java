@@ -29,7 +29,12 @@ public class BookingController {
             @PathVariable UUID skillId,
             @Valid @RequestBody BookingPayload payload
     ) {
-        return bookingService.book(principal.userId(), skillId, payload.realizationAt());
+        return bookingService.book(
+                principal.userId(),
+                skillId,
+                payload.realizationAt(),
+                payload.description()
+        );
     }
 
     @GetMapping("/users/me/bookings")

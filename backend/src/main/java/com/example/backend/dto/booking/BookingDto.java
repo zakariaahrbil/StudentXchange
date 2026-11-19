@@ -14,6 +14,7 @@ public record BookingDto(
         String skillName,
         Long price,
         Instant realizationAt,
+        String description,
         BookingStatus status,
         Instant createdAt,
         Instant updatedAt
@@ -27,6 +28,7 @@ public record BookingDto(
                 booking.getSkill().getName(),
                 booking.getPrice(),
                 booking.getRealizationAt(),
+                booking.getDescription(),
                 booking.getStatus(),
                 booking.getCreatedAt(),
                 booking.getUpdatedAt()

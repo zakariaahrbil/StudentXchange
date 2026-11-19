@@ -290,9 +290,13 @@ Content-Type: application/json
 
 ```json
 {
-  "realizationAt": "2026-12-01T14:00:00Z"
+  "realizationAt": "2026-12-01T14:00:00Z",
+  "description": "I would like to practice Java streams and error handling."
 }
 ```
+
+`description` est facultative, limitée à 2 000 caractères, et permet au buyer
+d'ajouter une demande ou des précisions sur l'échange.
 
 `realizationAt` doit être :
 
@@ -320,6 +324,7 @@ Réponse : `201 Created`.
   "skillName": "Java",
   "price": 25,
   "realizationAt": "2026-12-01T14:00:00Z",
+  "description": "I would like to practice Java streams and error handling.",
   "status": "PENDING",
   "createdAt": "2026-11-19T05:00:00Z",
   "updatedAt": "2026-11-19T05:00:00Z"

@@ -38,6 +38,9 @@ public class Booking {
     @Column(nullable = false)
     private Instant realizationAt;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.PENDING;

@@ -37,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto book(UUID buyerId, UUID skillId, java.time.Instant realizationAt) {
+    public BookingDto book(UUID buyerId, UUID skillId, java.time.Instant realizationAt, String description) {
         User buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + buyerId));
         Skill skill = skillRepository.findById(skillId)
@@ -59,6 +59,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setSkillOwner(skill.getOwner());
         booking.setPrice(skill.getPrice());
         booking.setRealizationAt(realizationAt);
+        booking.setDescription(normalizeDescription(description));
         booking.setStatus(BookingStatus.PENDING);
         addTransaction(wallet, Type.HOLD, skill.getPrice(), wallet.getBalance());
         return BookingDto.fromEntity(bookingRepository.save(booking));
@@ -167,5 +168,9 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus() != expected) {
             throw new BookingConflictException("Booking must be " + expected);
         }
+    }
+
+    private String normalizeDescription(String description) {
+        return description == null || description.isBlank() ? null : description.trim();
     }
 }

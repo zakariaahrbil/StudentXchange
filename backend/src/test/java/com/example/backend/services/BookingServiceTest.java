@@ -61,11 +61,12 @@ class BookingServiceTest {
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Instant realizationAt = Instant.now().plusSeconds(3600);
-        var result = bookingService.book(buyerId, skillId, realizationAt);
+        var result = bookingService.book(buyerId, skillId, realizationAt, "Practice Java streams");
 
         assertEquals(BookingStatus.PENDING, result.status());
         assertEquals(25L, result.price());
         assertEquals(realizationAt, result.realizationAt());
+        assertEquals("Practice Java streams", result.description());
         assertEquals(75L, wallet.getBalance());
         assertEquals(25L, wallet.getHeldBalance());
         assertEquals(Type.HOLD, wallet.getTransactions().get(0).getType());
@@ -80,7 +81,7 @@ class BookingServiceTest {
         when(skillRepository.findById(skill.getId())).thenReturn(Optional.of(skill));
 
         assertThrows(BookingConflictException.class,
-                () -> bookingService.book(ownerId, skill.getId(), Instant.now().plusSeconds(3600)));
+                () -> bookingService.book(ownerId, skill.getId(), Instant.now().plusSeconds(3600), null));
         verify(walletRepository, never()).findByUserId(any());
     }
 
@@ -97,7 +98,7 @@ class BookingServiceTest {
         when(walletRepository.findByUserId(buyerId)).thenReturn(Optional.of(wallet(buyer, 10L)));
 
         assertThrows(BookingConflictException.class,
-                () -> bookingService.book(buyerId, skill.getId(), Instant.now().plusSeconds(3600)));
+                () -> bookingService.book(buyerId, skill.getId(), Instant.now().plusSeconds(3600), null));
         verify(bookingRepository, never()).save(any());
     }
 
