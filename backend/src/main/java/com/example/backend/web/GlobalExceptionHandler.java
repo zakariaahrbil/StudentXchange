@@ -2,6 +2,7 @@ package com.example.backend.web;
 
 import com.example.backend.dto.errors.ApiErrorDto;
 import com.example.backend.exceptions.EmailAlreadyRegisteredException;
+import com.example.backend.exceptions.BookingConflictException;
 import com.example.backend.exceptions.ResourceNotFoundException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,6 +49,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiErrorDto> handleSkillConflict(
             IllegalArgumentException exception,
+            HttpServletRequest request
+    ) {
+        return response(HttpStatus.CONFLICT, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(BookingConflictException.class)
+    public ResponseEntity<ApiErrorDto> handleBookingConflict(
+            BookingConflictException exception,
             HttpServletRequest request
     ) {
         return response(HttpStatus.CONFLICT, exception.getMessage(), request);
@@ -104,6 +114,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorDto> handleDataIntegrityViolation(HttpServletRequest request) {
         return response(HttpStatus.CONFLICT, "The request conflicts with existing data", request);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ApiErrorDto> handleOptimisticLockingFailure(HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, "The wallet changed; please retry the operation", request);
     }
 
     @ExceptionHandler(Exception.class)
