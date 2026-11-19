@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Inbox,
+  Compass,
   Plus,
-  ClipboardList,
+  CalendarCheck,
   History,
 } from "lucide-react";
 
@@ -14,10 +14,10 @@ export default function FloatingNavbar() {
   const pathname = usePathname();
 
   const isHome = pathname === "/dashboard";
-  const isRequests = pathname === "/dashboard/requests";
-  const isNew = pathname === "/dashboard/requests/new";
-  const isMyDemands = pathname === "/dashboard/my-requests";
-  const isHistory = pathname === "/dashboard/history";
+  const isExplore = pathname.startsWith("/dashboard/explore");
+  const isPostSkill = pathname.startsWith("/dashboard/profile");
+  const isBookings = pathname.startsWith("/dashboard/bookings");
+  const isHistory = pathname.startsWith("/dashboard/history");
 
   return (
     <nav
@@ -37,43 +37,43 @@ export default function FloatingNavbar() {
         <span className="hidden sm:inline">Home</span>
       </Link>
 
-      {/* ── 2. REQUESTS FEED ── */}
+      {/* ── 2. EXPLORE TUTORS & SKILLS ── */}
       <Link
-        href="/dashboard/requests"
+        href="/dashboard/explore"
         className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold transition-all ${
-          isRequests
+          isExplore
             ? "bg-ink text-white shadow-sm"
             : "text-muted hover:text-ink hover:bg-slate-100"
         }`}
       >
-        <Inbox className="size-4" />
-        <span className="hidden sm:inline">Requests</span>
+        <Compass className="size-4" />
+        <span className="hidden sm:inline">Explore</span>
       </Link>
 
-      {/* ── 3. POST REQUEST (BIG CENTER FAB) ── */}
+      {/* ── 3. POST / MANAGE SKILLS (BIG CENTER FAB) ── */}
       <div className="relative px-1 -my-3 flex items-center justify-center">
         <Link
-          href="/dashboard/requests/new"
-          aria-label="Create new skill request"
+          href="/dashboard/profile"
+          aria-label="Offer or manage skills to teach"
           className={`size-12 sm:size-13 rounded-full flex items-center justify-center bg-mint text-ink shadow-lg ring-4 ring-white hover:scale-105 active:scale-95 transition-transform ${
-            isNew ? "ring-2 ring-ink ring-offset-2 bg-mint/90" : "hover:bg-mint/85"
+            isPostSkill ? "ring-2 ring-ink ring-offset-2 bg-mint/90" : "hover:bg-mint/85"
           }`}
         >
           <Plus className="size-6 stroke-[2.5]" />
         </Link>
       </div>
 
-      {/* ── 4. MY DEMANDS & REQUESTS ── */}
+      {/* ── 4. BOOKINGS & SESSIONS ── */}
       <Link
-        href="/dashboard/my-requests"
+        href="/dashboard/bookings"
         className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold transition-all ${
-          isMyDemands
+          isBookings
             ? "bg-ink text-white shadow-sm"
             : "text-muted hover:text-ink hover:bg-slate-100"
         }`}
       >
-        <ClipboardList className="size-4" />
-        <span className="hidden sm:inline">Demands</span>
+        <CalendarCheck className="size-4" />
+        <span className="hidden sm:inline">Bookings</span>
       </Link>
 
       {/* ── 5. HISTORY ── */}
