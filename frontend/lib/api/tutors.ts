@@ -1,5 +1,5 @@
-import api from "@/lib/axios";
-import type { Skill, TutorSkillListing } from "@/lib/types";
+import { getSkills, searchUsersBySkill } from "@/lib/api/skills";
+import type { TutorSkillListing, UserSkillSearchDto } from "@/lib/types";
 
 const MOCK_SERVICES: TutorSkillListing[] = [
   {
@@ -100,41 +100,74 @@ const MOCK_SERVICES: TutorSkillListing[] = [
   },
 ];
 
+function mapUserSkillDtoToListing(dto: UserSkillSearchDto): TutorSkillListing {
+  const firstName = dto.firstName || "Campus";
+  const lastName = dto.lastName || "Peer";
+  return {
+    id: `listing-${dto.userId}-${dto.skillId}`,
+    userId: dto.userId,
+    firstName,
+    lastName,
+    university: dto.university || "Campus Partner",
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@campus.edu`,
+    phoneNumber: dto.phoneNumber || null,
+    avatarUrl: dto.avatarUrl || null,
+    skillId: dto.skillId,
+    skillName: dto.skillName,
+    price: dto.skillPrice ?? 10,
+    description: dto.skillDescription || "Peer service and skill exchange offered on campus.",
+    rating: dto.skillRating > 0 ? dto.skillRating : 5.0,
+    reviewCount: dto.skillRating > 0 ? 12 : 0,
+  };
+}
+
 export async function searchTutors(query?: string): Promise<TutorSkillListing[]> {
+  const trimmed = query?.trim() ?? "";
+
   try {
-    const res = await api.get<Skill[]>("/api/skills", {
-      params: query ? { query } : undefined,
-    });
-    const backendSkills = res.data ?? [];
+    let liveListings: TutorSkillListing[] = [];
 
-    const combined = [...MOCK_SERVICES];
+    if (trimmed !== "") {
+      // ── Query provided: use backend GET /api/users/search?skill={query}
+      const searchDtos = await searchUsersBySkill(trimmed);
+      liveListings = searchDtos.map(mapUserSkillDtoToListing);
+    } else {
+      // ── Empty query: fetch all registered skills from backend
+      const backendSkills = await getSkills();
+      liveListings = backendSkills.map((skill) => ({
+        id: `serv-live-${skill.id}`,
+        userId: `u-live-${skill.id}`,
+        firstName: "Campus",
+        lastName: "Peer",
+        university: "Campus Partner",
+        email: "peer.provider@campus.edu",
+        phoneNumber: "+1 (555) 019-2834",
+        avatarUrl: null,
+        skillId: skill.id,
+        skillName: skill.name,
+        price: skill.price ?? 10,
+        description: skill.description || "Skill and peer service offered on campus for token exchange.",
+        rating: 5.0,
+        reviewCount: 0,
+      }));
+    }
 
-    for (const skill of backendSkills) {
-      if (!combined.some((t) => t.skillId === skill.id || t.skillName.toLowerCase() === skill.name.toLowerCase())) {
-        combined.unshift({
-          id: `serv-live-${skill.id}`,
-          userId: `u-live-${skill.id}`,
-          firstName: "Peer",
-          lastName: "Provider",
-          university: "Campus Partner",
-          email: "peer.provider@campus.edu",
-          phoneNumber: "+1 (555) 019-2834",
-          avatarUrl: null,
-          skillId: skill.id,
-          skillName: skill.name,
-          description: "Skill and peer service offered on campus for token exchange.",
-          price: skill.price ?? 10,
-          rating: 4.8,
-          reviewCount: 12,
-        });
+    // Merge with sample peer offerings, prioritizing live backend results
+    const combined = [...liveListings];
+    for (const mock of MOCK_SERVICES) {
+      const alreadyIncluded = combined.some(
+        (item) => item.skillName.toLowerCase() === mock.skillName.toLowerCase()
+      );
+      if (!alreadyIncluded) {
+        combined.push(mock);
       }
     }
 
-    if (!query || query.trim() === "") {
+    if (!trimmed) {
       return combined;
     }
 
-    const q = query.toLowerCase().trim();
+    const q = trimmed.toLowerCase();
     return combined.filter(
       (t) =>
         t.skillName.toLowerCase().includes(q) ||
@@ -144,10 +177,11 @@ export async function searchTutors(query?: string): Promise<TutorSkillListing[]>
         (t.university && t.university.toLowerCase().includes(q))
     );
   } catch {
-    if (!query || query.trim() === "") {
+    // Graceful offline fallback to mock services
+    if (!trimmed) {
       return MOCK_SERVICES;
     }
-    const q = query.toLowerCase().trim();
+    const q = trimmed.toLowerCase();
     return MOCK_SERVICES.filter(
       (t) =>
         t.skillName.toLowerCase().includes(q) ||

@@ -59,24 +59,3 @@ export async function createSkillReview(
   const res = await api.post<ReviewDto>(`/api/skills/${skillId}/reviews`, payload);
   return res.data;
 }
-
-
-export async function searchUsersBySkill(skill: string): Promise<UserSkillSearchDto[]> {
-  const res = await api.get<UserSkillSearchDto[]>("/api/users/search", {
-    params: { skill },
-  });
-  return res.data;
-}
-
-export async function getSkillReviews(skillId: string): Promise<ReviewDto[]> {
-  const res = await api.get<ReviewDto[]>(`/api/skills/${skillId}/reviews`);
-  return res.data;
-}
-
-export async function createSkillReview(
-  skillId: string,
-  payload: CreateReviewPayload
-): Promise<ReviewDto> {
-  const res = await api.post<ReviewDto>(`/api/skills/${skillId}/reviews`, payload);
-  return res.data;
-}
