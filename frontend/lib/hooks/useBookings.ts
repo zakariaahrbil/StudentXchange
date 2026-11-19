@@ -30,6 +30,7 @@ export function useCreateBooking() {
     mutationFn: ({ skillId, payload }) => bookSkill(skillId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
     },
   });
 }
@@ -63,6 +64,7 @@ export function useCompleteBooking() {
     mutationFn: (bookingId) => completeBooking(bookingId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
     },
   });
 }
@@ -74,6 +76,7 @@ export function useCancelBooking() {
     mutationFn: (bookingId) => cancelBooking(bookingId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
     },
   });
 }

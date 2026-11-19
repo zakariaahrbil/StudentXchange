@@ -74,8 +74,9 @@ export default function ProfilePage() {
               Student Exchange Credits
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              {/* TODO: Replace with actual credits from user profile when available */}
-              <span className="text-3xl sm:text-4xl font-bold text-ink">100</span>
+              <span className="text-3xl sm:text-4xl font-bold text-ink">
+                {user?.tokenBalance ?? 100}
+              </span>
               <span className="text-sm font-semibold text-purple">Tokens</span>
             </div>
             <p className="text-xs text-faint mt-1">

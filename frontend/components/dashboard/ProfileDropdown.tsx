@@ -56,7 +56,7 @@ export default function ProfileDropdown() {
             Credits
           </span>
           <span className="font-bold text-purple bg-purple/10 px-1.5 py-0.5 rounded text-[11px]">
-            100 Tokens
+            {user?.tokenBalance ?? 100} Tokens
           </span>
         </div>
 
