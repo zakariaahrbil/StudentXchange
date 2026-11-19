@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useLogoutMutation } from "@/lib/hooks/useAuth";
 import SkillsSection from "@/components/dashboard/SkillsSection";
+import PhoneNumberField from "@/components/profile/PhoneNumberField";
 import { useState } from "react";
 
 export default function ProfilePage() {
@@ -100,52 +101,51 @@ export default function ProfilePage() {
 
       { showSkills &&  <SkillsSection />}
 
-      {/* ── PERSONAL INFORMATION ── */}
-      <section className="bg-white border border-border p-6 sm:p-8">
-        <div className="border-b border-border pb-4 mb-6">
-          <h2 className="text-lg font-bold text-ink">Personal Information</h2>
-          <p className="text-xs text-muted mt-1">
-            Your university and profile information visible to other students.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-              First Name
-            </label>
-            <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
-              {user?.firstName ?? "—"}
-            </div>
+      {/* ── PERSONAL INFORMATION & CONTACT DETAILS ── */}
+      <section className="bg-white border border-border p-6 sm:p-8 flex flex-col gap-8">
+        <div>
+          <div className="border-b border-border pb-4 mb-6">
+            <h2 className="text-lg font-bold text-ink">Personal Information</h2>
+            <p className="text-xs text-muted mt-1">
+              Your identity and university details.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-              Last Name
-            </label>
-            <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
-              {user?.lastName ?? "—"}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                First Name
+              </label>
+              <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
+                {user?.firstName ?? "—"}
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-              Email Address
-            </label>
-            <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
-              {user?.email ?? "—"}
+            <div>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                Last Name
+              </label>
+              <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
+                {user?.lastName ?? "—"}
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
-              University / Institution
-            </label>
-            <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
-              {user?.university ?? "Not specified"}
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                University / Institution
+              </label>
+              <div className="px-3.5 py-2.5 bg-[#FAFAFA] border border-border text-sm font-medium text-ink">
+                {user?.university ?? "Not specified"}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* ── ALWAYS-VISIBLE PEER CONTACT (PHONE & EMAIL) ── */}
+        <PhoneNumberField
+          initialPhoneNumber={user?.phoneNumber}
+          email={user?.email}
+        />
       </section>
 
       {/* ── ACCOUNT STATUS & SETTINGS ── */}

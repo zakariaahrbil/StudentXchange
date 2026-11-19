@@ -8,6 +8,7 @@ export interface AuthState {
   isLoading: boolean;
 
   setAuth: (userProfile: UserProfile, accessToken: string) => void;
+  setUserProfile: (userProfile: UserProfile) => void;
   setAccessToken: (accessToken: string) => void;
   setLoading: (loading: boolean) => void;
   signOut: () => void;
@@ -25,6 +26,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       accessToken,
       isAuthenticated: true,
       isLoading: false,
+    }),
+
+  setUserProfile: (userProfile: UserProfile) =>
+    set({
+      userProfile,
     }),
 
   setAccessToken: (accessToken: string) =>
