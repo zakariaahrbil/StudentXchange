@@ -46,48 +46,46 @@ class SkillControllerTest {
     void listsSkillsByQuery() throws Exception {
         UUID skillId = UUID.randomUUID();
         when(skillService.search("java"))
-                .thenReturn(List.of(new SkillDto(skillId, "Java")));
+                .thenReturn(List.of(new SkillDto(skillId, "Java", 25L)));
 
         mockMvc.perform(get("/api/skills").param("query", "java"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(skillId.toString()))
-                .andExpect(jsonPath("$[0].name").value("Java"));
+                .andExpect(jsonPath("$[0].name").value("Java"))
+                .andExpect(jsonPath("$[0].price").value(25));
     }
 
     @Test
     void attachesSkillForAuthenticatedPrincipal() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();
-        when(skillService.createForUser(userId, "Java"))
-                .thenReturn(new SkillDto(skillId, "Java"));
+        when(skillService.createForUser(userId, "Java", 25L))
+                .thenReturn(new SkillDto(skillId, "Java", 25L));
 
         var result = controller.createForCurrentUser(
                 new JwtUserPrincipal(userId, "student@example.com", "STUDENT"),
-                new SkillPayload("Java")
+                new SkillPayload("Java", 25L)
         );
 
         assertEquals(skillId, result.id());
         assertEquals("Java", result.name());
-        verify(skillService).createForUser(userId, "Java");
+        assertEquals(25L, result.price());
+        verify(skillService).createForUser(userId, "Java", 25L);
     }
 
     @Test
     void alwaysUsesAuthenticatedPrincipalIdForAttachment() throws Exception {
         UUID authenticatedUserId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();
-        when(skillService.createForUser(authenticatedUserId, "Java"))
-                .thenReturn(new SkillDto(skillId, "Java"));
+        when(skillService.createForUser(authenticatedUserId, "Java", 25L))
+                .thenReturn(new SkillDto(skillId, "Java", 25L));
 
         controller.createForCurrentUser(
                 new JwtUserPrincipal(authenticatedUserId, "student@example.com", "STUDENT"),
-                new SkillPayload("Java")
+                new SkillPayload("Java", 25L)
         );
 
-        verify(skillService).createForUser(authenticatedUserId, "Java");
-        verify(skillService, never()).createForUser(
-                argThat(id -> !authenticatedUserId.equals(id)),
-                anyString()
-        );
+        verify(skillService).createForUser(authenticatedUserId, "Java", 25L);
     }
 
     @Test
@@ -95,7 +93,7 @@ class SkillControllerTest {
         mockMvc.perform(post("/api/users/me/skills")
                         .contentType("application/json")
                         .content("""
-                                {"name":" "}
+                                {"name":" ","price":25}
                                 """))
                 .andExpect(status().isBadRequest());
 

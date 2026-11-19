@@ -9,9 +9,9 @@ public interface SkillService {
 
     List<SkillDto> search(String query);
 
-    SkillDto createForUser(UUID userId, String skillName);
+    SkillDto createForUser(UUID userId, String skillName, Long price);
 
-    SkillDto updateForUser(UUID userId, UUID skillId, String skillName);
+    SkillDto updateForUser(UUID userId, UUID skillId, String skillName, Long price);
 
     void deleteForUser(UUID userId, UUID skillId);
 }

@@ -32,7 +32,7 @@ public class SkillController {
             @AuthenticationPrincipal JwtUserPrincipal principal,
             @Valid @RequestBody SkillPayload payload
     ) {
-        return skillService.createForUser(principal.userId(), payload.name());
+        return skillService.createForUser(principal.userId(), payload.name(), payload.price());
     }
 
     @PutMapping("/users/me/skills/{skillId}")
@@ -41,7 +41,7 @@ public class SkillController {
             @PathVariable java.util.UUID skillId,
             @Valid @RequestBody SkillPayload payload
     ) {
-        return skillService.updateForUser(principal.userId(), skillId, payload.name());
+        return skillService.updateForUser(principal.userId(), skillId, payload.name(), payload.price());
     }
 
     @DeleteMapping("/users/me/skills/{skillId}")

@@ -41,10 +41,11 @@ class SkillServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(skillRepository.existsByOwnerIdAndNameIgnoreCase(userId, "Java")).thenReturn(false);
 
-        var result = skillService.createForUser(userId, " Java ");
+        var result = skillService.createForUser(userId, " Java ", 25L);
 
         assertNull(result.id());
         assertEquals("Java", result.name());
+        assertEquals(25L, result.price());
         verify(skillRepository).save(any(Skill.class));
     }
 
@@ -57,7 +58,7 @@ class SkillServiceTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> skillService.createForUser(userId, "Java")
+                () -> skillService.createForUser(userId, "Java", 25L)
         );
 
         verify(skillRepository, never()).save(any());
@@ -71,7 +72,7 @@ class SkillServiceTest {
 
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> skillService.updateForUser(userId, skillId, "Rust")
+                () -> skillService.updateForUser(userId, skillId, "Rust", 25L)
         );
     }
 
@@ -94,7 +95,7 @@ class SkillServiceTest {
 
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> skillService.updateForUser(userId, UUID.randomUUID(), "Rust")
+                () -> skillService.updateForUser(userId, UUID.randomUUID(), "Rust", 25L)
         );
     }
 

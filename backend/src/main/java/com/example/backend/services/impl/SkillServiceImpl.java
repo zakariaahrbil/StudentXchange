@@ -39,7 +39,7 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     @Transactional
-    public SkillDto createForUser(UUID userId, String skillName) {
+    public SkillDto createForUser(UUID userId, String skillName, Long price) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -51,6 +51,7 @@ public class SkillServiceImpl implements SkillService {
         Skill skill = new Skill();
         skill.setOwner(user);
         skill.setName(normalizedName);
+        skill.setPrice(price);
         user.getSkills().add(skill);
         skillRepository.save(skill);
         userRepository.save(user);
@@ -59,7 +60,7 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     @Transactional
-    public SkillDto updateForUser(UUID userId, UUID skillId, String skillName) {
+    public SkillDto updateForUser(UUID userId, UUID skillId, String skillName, Long price) {
         Skill skill = skillRepository.findByIdAndOwnerId(skillId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + skillId));
         String normalizedName = skillName.trim();
@@ -68,6 +69,7 @@ public class SkillServiceImpl implements SkillService {
             throw new IllegalArgumentException("Skill already exists for this user: " + normalizedName);
         }
         skill.setName(normalizedName);
+        skill.setPrice(price);
         return SkillDto.fromEntity(skillRepository.save(skill));
     }
 
