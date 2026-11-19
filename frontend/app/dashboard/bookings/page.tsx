@@ -12,6 +12,7 @@ import {
   useCancelBooking,
 } from "@/lib/hooks/useBookings";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
+import { getApiErrorMessage } from "@/lib/errors";
 import type { Booking } from "@/lib/types";
 import { Calendar, Search, ArrowRight } from "lucide-react";
 
@@ -70,11 +71,12 @@ const INITIAL_DEMO_BOOKINGS: Booking[] = [
 export default function BookingsPage() {
   const [activeTab, setActiveTab] = useState<"learner" | "tutor">("learner");
   const [localBookings, setLocalBookings] = useState<Booking[]>(INITIAL_DEMO_BOOKINGS);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const user = useAuthStore((state) => state.userProfile);
   const currentUserId = user?.id ?? "u-current";
 
-  const { data: serverBookings = [], isLoading } = useUserBookings();
+  const { data: serverBookings = [], isLoading, isError } = useUserBookings();
 
   // Mutations
   const { mutate: acceptBooking, isPending: isAccepting } = useAcceptBooking();
@@ -84,58 +86,78 @@ export default function BookingsPage() {
 
   const isActionPending = isAccepting || isRejecting || isCompleting || isCancelling;
 
-  // Combine server bookings with demo bookings if empty
-  const allBookings = serverBookings.length > 0 ? serverBookings : localBookings;
+  // Use live server bookings when query succeeds; fallback to offline demo only if network fails
+  const allBookings = isError ? localBookings : serverBookings;
 
   // Filter based on tab:
   // "learner": bookings made by the current user
   // "tutor": incoming requests for the current user's skills
   const learnerBookings = allBookings.filter(
-    (b) => b.buyerId === currentUserId || b.buyerId === "u-current"
+    (b) => b.buyerId === currentUserId || (isError && b.buyerId === "u-current")
   );
   const tutorBookings = allBookings.filter(
-    (b) => b.skillOwnerId === currentUserId || b.skillOwnerId === "u-current"
+    (b) => b.skillOwnerId === currentUserId || (isError && b.skillOwnerId === "u-current")
   );
 
   const displayedBookings = activeTab === "learner" ? learnerBookings : tutorBookings;
 
-  // Handlers with local state fallback for instant demo reactivity
+  // Handlers with local state fallback for offline resilience
   const handleAccept = (bookingId: string) => {
+    setActionError(null);
     acceptBooking(bookingId, {
-      onError: () => {
-        setLocalBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, status: "ACCEPTED" } : b))
-        );
+      onError: (err) => {
+        if (isError) {
+          setLocalBookings((prev) =>
+            prev.map((b) => (b.id === bookingId ? { ...b, status: "ACCEPTED" } : b))
+          );
+        } else {
+          setActionError(getApiErrorMessage(err, "Failed to accept booking."));
+        }
       },
     });
   };
 
   const handleReject = (bookingId: string) => {
+    setActionError(null);
     rejectBooking(bookingId, {
-      onError: () => {
-        setLocalBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, status: "REJECTED" } : b))
-        );
+      onError: (err) => {
+        if (isError) {
+          setLocalBookings((prev) =>
+            prev.map((b) => (b.id === bookingId ? { ...b, status: "REJECTED" } : b))
+          );
+        } else {
+          setActionError(getApiErrorMessage(err, "Failed to reject booking."));
+        }
       },
     });
   };
 
   const handleComplete = (bookingId: string) => {
+    setActionError(null);
     completeBooking(bookingId, {
-      onError: () => {
-        setLocalBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, status: "COMPLETED" } : b))
-        );
+      onError: (err) => {
+        if (isError) {
+          setLocalBookings((prev) =>
+            prev.map((b) => (b.id === bookingId ? { ...b, status: "COMPLETED" } : b))
+          );
+        } else {
+          setActionError(getApiErrorMessage(err, "Failed to mark booking completed."));
+        }
       },
     });
   };
 
   const handleCancel = (bookingId: string) => {
+    setActionError(null);
     cancelBooking(bookingId, {
-      onError: () => {
-        setLocalBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, status: "CANCELLED" } : b))
-        );
+      onError: (err) => {
+        if (isError) {
+          setLocalBookings((prev) =>
+            prev.map((b) => (b.id === bookingId ? { ...b, status: "CANCELLED" } : b))
+          );
+        } else {
+          setActionError(getApiErrorMessage(err, "Failed to cancel booking."));
+        }
       },
     });
   };
@@ -204,6 +226,27 @@ export default function BookingsPage() {
           <p className="text-xs text-muted mt-1">Protected until completion</p>
         </div>
       </div>
+
+      {/* ── ACTION ERROR ALERT ── */}
+      {actionError && (
+        <div className="bg-rose-50 border border-rose-200 p-3.5 flex items-center justify-between gap-3 text-xs text-rose-800">
+          <span>{actionError}</span>
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
+            className="text-rose-600 hover:text-rose-900 font-bold ml-2 cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* ── OFFLINE DEMO NOTICE ── */}
+      {isError && (
+        <div className="bg-slate-100 border border-border p-3 text-xs text-muted flex items-center justify-between">
+          <span>Backend offline or unreachable. Displaying local fallback session data.</span>
+        </div>
+      )}
 
       {/* ── TABS ── */}
       <BookingsTabs
