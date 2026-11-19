@@ -1,157 +1,199 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Clock, CheckCircle2, ArrowRight } from "lucide-react";
+import { useUserBookings } from "@/lib/hooks/useBookings";
+import { useAuthStore } from "@/lib/hooks/useAuthStore";
+import type { Booking } from "@/lib/types";
 
-interface HistoryRecord {
-  id: string;
-  skill: string;
-  partner: string;
-  role: "taught" | "learned";
-  tokens: number;
-  date: string;
-  status: "Completed" | "Pending";
-}
-
-const SAMPLE_HISTORY: HistoryRecord[] = [
+// Fallback sample for offline development
+const OFFLINE_SAMPLE_HISTORY: Booking[] = [
   {
-    id: "tx-1",
-    skill: "React & Next.js Fundamentals",
-    partner: "Sarah Chen",
-    role: "taught",
-    tokens: 15,
-    date: "Nov 15, 2026",
-    status: "Completed",
+    id: "hist-sample-1",
+    skillId: "sk-1",
+    skillName: "React & Next.js Architecture Review",
+    skillOwnerId: "u-current",
+    buyerId: "u-101",
+    price: 15,
+    realizationAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    status: "COMPLETED",
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Code review and server action debugging.",
   },
   {
-    id: "tx-2",
-    skill: "Linear Algebra & Matrix Ops",
-    partner: "David Miller",
-    role: "learned",
-    tokens: 10,
-    date: "Nov 12, 2026",
-    status: "Completed",
-  },
-  {
-    id: "tx-3",
-    skill: "Figma UI Design Systems",
-    partner: "Emma Watson",
-    role: "taught",
-    tokens: 20,
-    date: "Nov 08, 2026",
-    status: "Completed",
-  },
-  {
-    id: "tx-4",
-    skill: "Python Data Analysis with Pandas",
-    partner: "Lucas Garcia",
-    role: "learned",
-    tokens: 12,
-    date: "Nov 02, 2026",
-    status: "Completed",
+    id: "hist-sample-2",
+    skillId: "sk-3",
+    skillName: "UI/UX & Figma Design Systems",
+    skillOwnerId: "u-103",
+    buyerId: "u-current",
+    price: 12,
+    realizationAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    status: "COMPLETED",
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    description: "Design review for dashboard navigation.",
   },
 ];
 
 export default function HistoryPage() {
+  const user = useAuthStore((state) => state.userProfile);
+  const currentUserId = user?.id ?? "u-current";
+
+  const { data: serverBookings = [], isLoading, isError } = useUserBookings();
+
+  // Use live completed bookings when query succeeds; fallback to offline demo only if network error
+  const sourceBookings = isError ? OFFLINE_SAMPLE_HISTORY : serverBookings;
+  const completedBookings = sourceBookings.filter((b) => b.status === "COMPLETED");
+
+  // Calculate real totals
+  const totalEarned = completedBookings
+    .filter((b) => b.skillOwnerId === currentUserId || (isError && b.skillOwnerId === "u-current"))
+    .reduce((acc, curr) => acc + curr.price, 0);
+
+  const totalSpent = completedBookings
+    .filter((b) => b.buyerId === currentUserId || (isError && b.buyerId === "u-current"))
+    .reduce((acc, curr) => acc + curr.price, 0);
+
   return (
     <div className="flex flex-col gap-8 max-w-5xl mx-auto">
       {/* ── HEADER ── */}
       <section className="bg-white border border-border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider bg-purple/10 text-purple px-2.5 py-1 inline-block mb-3">
+          <span className="text-[11px] font-bold uppercase tracking-wider bg-mint text-ink px-2.5 py-1 inline-block mb-3">
             Activity
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             Exchange History
           </h1>
           <p className="text-sm text-muted mt-1">
-            Review your past learning and teaching sessions and token balances.
+            Review your past peer services, completed exchanges, and token activity.
           </p>
         </div>
 
-        <div className="flex items-center gap-6 bg-slate-50 border border-border px-5 py-3 rounded">
+        <div className="flex items-center gap-6 bg-slate-50 border border-border px-5 py-3">
           <div>
             <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
               Total Earned
             </div>
-            <div className="text-lg font-bold text-ink">+35 Tokens</div>
+            <div className="text-lg font-bold text-ink">+{totalEarned} Tokens</div>
           </div>
           <div className="w-[1px] h-8 bg-border" />
           <div>
             <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
               Total Spent
             </div>
-            <div className="text-lg font-bold text-ink">22 Tokens</div>
+            <div className="text-lg font-bold text-ink">{totalSpent} Tokens</div>
           </div>
         </div>
       </section>
+
+      {/* ── OFFLINE DEMO NOTICE ── */}
+      {isError && (
+        <div className="bg-slate-100 border border-border p-3 text-xs text-muted flex items-center justify-between">
+          <span>Backend offline. Displaying local sample exchange history.</span>
+        </div>
+      )}
 
       {/* ── SESSIONS LIST ── */}
       <section className="bg-white border border-border">
         <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-wider text-ink">
-            Past Sessions
+            Completed Sessions
           </h2>
           <span className="text-xs text-muted">
-            {SAMPLE_HISTORY.length} recorded exchanges
+            {completedBookings.length} completed {completedBookings.length === 1 ? "exchange" : "exchanges"}
           </span>
         </div>
 
-        <div className="divide-y divide-border">
-          {SAMPLE_HISTORY.map((item) => {
-            const isEarned = item.role === "taught";
-            return (
-              <div
-                key={item.id}
-                className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                      isEarned
-                        ? "bg-mint/20 text-ink"
-                        : "bg-purple/10 text-purple"
-                    }`}
-                  >
-                    {isEarned ? (
-                      <ArrowDownLeft className="size-5" />
-                    ) : (
-                      <ArrowUpRight className="size-5" />
-                    )}
-                  </div>
+        {isLoading ? (
+          <div className="py-12 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-mint border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : completedBookings.length === 0 ? (
+          <div className="p-12 text-center flex flex-col items-center justify-center">
+            <Clock className="size-8 text-muted mb-3" />
+            <h3 className="text-base font-bold text-ink">No completed exchanges yet</h3>
+            <p className="text-xs text-muted mt-1 max-w-sm">
+              When peer sessions are completed and tokens are transferred, they will appear here.
+            </p>
+            <Link
+              href="/dashboard/explore"
+              className="mt-6 inline-flex items-center gap-2 bg-mint text-ink text-xs font-semibold px-5 py-2.5 hover:bg-mint/80 transition-colors"
+            >
+              <span>Explore Skills</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {completedBookings.map((item) => {
+              const isEarned =
+                item.skillOwnerId === currentUserId ||
+                (isError && item.skillOwnerId === "u-current");
 
-                  <div>
-                    <h3 className="text-sm font-bold text-ink">{item.skill}</h3>
-                    <div className="flex items-center gap-2 text-xs text-muted mt-1">
-                      <span>
-                        {isEarned ? "Taught to" : "Learned from"}{" "}
-                        <strong className="text-ink font-semibold">
-                          {item.partner}
-                        </strong>
-                      </span>
-                      <span>•</span>
-                      <span>{item.date}</span>
+              const sessionDate = item.realizationAt || item.createdAt;
+              const formattedDate = sessionDate
+                ? new Date(sessionDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "Recent";
+
+              return (
+                <div
+                  key={item.id}
+                  className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border border-border ${
+                        isEarned
+                          ? "bg-mint/30 text-ink"
+                          : "bg-slate-100 text-ink"
+                      }`}
+                    >
+                      {isEarned ? (
+                        <ArrowDownLeft className="size-5" />
+                      ) : (
+                        <ArrowUpRight className="size-5" />
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-bold text-ink">{item.skillName}</h3>
+                      <div className="flex items-center gap-2 text-xs text-muted mt-1">
+                        <span>
+                          {isEarned ? "Provided to peer" : "Received from peer"}
+                        </span>
+                        <span>•</span>
+                        <span>{formattedDate}</span>
+                      </div>
+                      {item.description && (
+                        <p className="text-xs text-muted mt-1.5 line-clamp-1 italic">
+                          &ldquo;{item.description}&rdquo;
+                        </p>
+                      )}
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center sm:flex-col sm:items-end justify-between gap-2 shrink-0">
-                  <div
-                    className={`text-sm font-bold ${
-                      isEarned ? "text-emerald-700" : "text-ink"
-                    }`}
-                  >
-                    {isEarned ? `+${item.tokens}` : `-${item.tokens}`} Tokens
+                  <div className="flex items-center sm:flex-col sm:items-end justify-between gap-2 shrink-0">
+                    <div
+                      className={`text-sm font-bold ${
+                        isEarned ? "text-emerald-700" : "text-ink"
+                      }`}
+                    >
+                      {isEarned ? `+${item.price}` : `-${item.price}`} Tokens
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5">
+                      <CheckCircle2 className="size-3" />
+                      <span>Completed</span>
+                    </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <CheckCircle2 className="size-3" />
-                    {item.status}
-                  </span>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
