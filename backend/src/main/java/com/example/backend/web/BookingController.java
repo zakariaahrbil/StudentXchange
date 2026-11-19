@@ -1,8 +1,10 @@
 package com.example.backend.web;
 
 import com.example.backend.dto.booking.BookingDto;
+import com.example.backend.payloads.booking.BookingPayload;
 import com.example.backend.security.JwtUserPrincipal;
 import com.example.backend.services.BookingService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +26,10 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto book(
             @AuthenticationPrincipal JwtUserPrincipal principal,
-            @PathVariable UUID skillId
+            @PathVariable UUID skillId,
+            @Valid @RequestBody BookingPayload payload
     ) {
-        return bookingService.book(principal.userId(), skillId);
+        return bookingService.book(principal.userId(), skillId, payload.realizationAt());
     }
 
     @GetMapping("/users/me/bookings")

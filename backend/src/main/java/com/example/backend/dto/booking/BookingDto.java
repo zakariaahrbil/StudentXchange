@@ -13,6 +13,7 @@ public record BookingDto(
         UUID skillOwnerId,
         String skillName,
         Long price,
+        Instant realizationAt,
         BookingStatus status,
         Instant createdAt,
         Instant updatedAt
@@ -25,6 +26,7 @@ public record BookingDto(
                 booking.getSkillOwner().getId(),
                 booking.getSkill().getName(),
                 booking.getPrice(),
+                booking.getRealizationAt(),
                 booking.getStatus(),
                 booking.getCreatedAt(),
                 booking.getUpdatedAt()

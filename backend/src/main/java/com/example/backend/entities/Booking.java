@@ -35,6 +35,9 @@ public class Booking {
     @Column(nullable = false)
     private Long price;
 
+    @Column(nullable = false)
+    private Instant realizationAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.PENDING;

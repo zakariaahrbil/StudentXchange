@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BookingService {
-    BookingDto book(UUID buyerId, UUID skillId);
+    BookingDto book(UUID buyerId, UUID skillId, java.time.Instant realizationAt);
     List<BookingDto> findForUser(UUID userId);
     BookingDto accept(UUID ownerId, UUID bookingId);
     BookingDto reject(UUID ownerId, UUID bookingId);

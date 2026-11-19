@@ -9,8 +9,6 @@ import com.example.backend.repositories.SkillRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.repositories.WalletRepository;
 import com.example.backend.services.BookingService;
-import jakarta.persistence.OptimisticLockException;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto book(UUID buyerId, UUID skillId) {
+    public BookingDto book(UUID buyerId, UUID skillId, java.time.Instant realizationAt) {
         User buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + buyerId));
         Skill skill = skillRepository.findById(skillId)
@@ -60,6 +58,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setSkill(skill);
         booking.setSkillOwner(skill.getOwner());
         booking.setPrice(skill.getPrice());
+        booking.setRealizationAt(realizationAt);
         booking.setStatus(BookingStatus.PENDING);
         addTransaction(wallet, Type.HOLD, skill.getPrice(), wallet.getBalance());
         return BookingDto.fromEntity(bookingRepository.save(booking));

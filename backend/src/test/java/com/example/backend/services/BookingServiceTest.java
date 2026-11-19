@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -59,10 +60,12 @@ class BookingServiceTest {
         when(walletRepository.findByUserId(buyerId)).thenReturn(Optional.of(wallet));
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        var result = bookingService.book(buyerId, skillId);
+        Instant realizationAt = Instant.now().plusSeconds(3600);
+        var result = bookingService.book(buyerId, skillId, realizationAt);
 
         assertEquals(BookingStatus.PENDING, result.status());
         assertEquals(25L, result.price());
+        assertEquals(realizationAt, result.realizationAt());
         assertEquals(75L, wallet.getBalance());
         assertEquals(25L, wallet.getHeldBalance());
         assertEquals(Type.HOLD, wallet.getTransactions().get(0).getType());
@@ -76,7 +79,8 @@ class BookingServiceTest {
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
         when(skillRepository.findById(skill.getId())).thenReturn(Optional.of(skill));
 
-        assertThrows(BookingConflictException.class, () -> bookingService.book(ownerId, skill.getId()));
+        assertThrows(BookingConflictException.class,
+                () -> bookingService.book(ownerId, skill.getId(), Instant.now().plusSeconds(3600)));
         verify(walletRepository, never()).findByUserId(any());
     }
 
@@ -92,7 +96,8 @@ class BookingServiceTest {
                 .thenReturn(false);
         when(walletRepository.findByUserId(buyerId)).thenReturn(Optional.of(wallet(buyer, 10L)));
 
-        assertThrows(BookingConflictException.class, () -> bookingService.book(buyerId, skill.getId()));
+        assertThrows(BookingConflictException.class,
+                () -> bookingService.book(buyerId, skill.getId(), Instant.now().plusSeconds(3600)));
         verify(bookingRepository, never()).save(any());
     }
 
