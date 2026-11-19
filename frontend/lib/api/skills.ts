@@ -23,7 +23,10 @@ export async function getSkills(query?: string): Promise<Skill[]> {
 }
 
 export async function createSkill(payload: string | CreateSkillPayload): Promise<Skill> {
-  const body = typeof payload === "string" ? { name: payload } : payload;
+  const body =
+    typeof payload === "string"
+      ? { name: payload, price: 10 }
+      : { price: 10, ...payload };
   const res = await api.post<Skill>("/api/users/me/skills", body);
   return res.data;
 }
