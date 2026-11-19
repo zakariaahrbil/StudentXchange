@@ -1,19 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import SkillSearchBar from "@/components/explore/SkillSearchBar";
 import TutorList from "@/components/explore/TutorList";
+import BookingModal from "@/components/bookings/BookingModal";
 import { useTutors } from "@/lib/hooks/useTutors";
 import type { TutorSkillListing } from "@/lib/types";
-import { Sparkles } from "lucide-react";
+import { Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTutor, setSelectedTutor] = useState<TutorSkillListing | null>(null);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
+
   const { data: tutors = [], isLoading } = useTutors(searchQuery);
 
   const handleBook = (tutor: TutorSkillListing) => {
-    // In Step 4, this triggers the BookingModal
-    alert(`Booking modal for ${tutor.firstName} (${tutor.skillName}) will open here!`);
+    setSelectedTutor(tutor);
+  };
+
+  const handleBookingSuccess = () => {
+    if (selectedTutor) {
+      setSuccessNotice(
+        `Your session request for "${selectedTutor.skillName}" has been sent to ${selectedTutor.firstName}. Your tokens are held in escrow until completion.`
+      );
+    }
   };
 
   return (
@@ -40,6 +52,26 @@ export default function ExplorePage() {
         </div>
       </section>
 
+      {/* ── SUCCESS NOTICE BANNER ── */}
+      {successNotice && (
+        <div className="bg-emerald-50 border border-emerald-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+          <div className="flex items-start sm:items-center gap-3">
+            <CheckCircle2 className="size-5 text-emerald-700 shrink-0 mt-0.5 sm:mt-0" />
+            <p className="text-xs font-medium text-emerald-950">
+              {successNotice}
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/bookings"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-white border border-emerald-300 px-3 py-1.5 hover:bg-emerald-100/60 transition-colors shrink-0"
+          >
+            <span>View in Bookings</span>
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
+      )}
+
       {/* ── SEARCH BAR ── */}
       <SkillSearchBar
         value={searchQuery}
@@ -54,6 +86,14 @@ export default function ExplorePage() {
         onBook={handleBook}
         searchQuery={searchQuery}
         onClearSearch={() => setSearchQuery("")}
+      />
+
+      {/* ── BOOKING MODAL ── */}
+      <BookingModal
+        isOpen={Boolean(selectedTutor)}
+        onClose={() => setSelectedTutor(null)}
+        tutor={selectedTutor}
+        onSuccess={handleBookingSuccess}
       />
     </div>
   );
