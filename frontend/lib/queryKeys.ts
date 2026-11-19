@@ -10,5 +10,6 @@ export const queryKeys = {
   bookings: {
     all: ["bookings"] as const,
     me: () => [...queryKeys.bookings.all, "me"] as const,
+    detail: (id: string) => [...queryKeys.bookings.all, id] as const,
   },
 } as const;

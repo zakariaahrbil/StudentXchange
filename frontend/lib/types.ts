@@ -44,3 +44,42 @@ export interface Skill {
   name: string;
   price?: number;
 }
+
+export type BookingStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "CANCELLED"
+  | "COMPLETED";
+
+export interface Booking {
+  id: string;
+  buyerId: string;
+  skillId: string;
+  skillOwnerId: string;
+  skillName: string;
+  price: number;
+  realizationAt: string;
+  status: BookingStatus;
+  createdAt: string;
+  updatedAt?: string;
+  description?: string;
+}
+
+export interface CreateBookingPayload {
+  realizationAt: string;
+}
+
+export interface TutorSkillListing {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  university?: string | null;
+  email: string;
+  phoneNumber?: string | null;
+  avatarUrl?: string | null;
+  skillId: string;
+  skillName: string;
+  price: number;
+}
