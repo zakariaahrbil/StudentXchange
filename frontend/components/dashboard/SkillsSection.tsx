@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useGetSkills, useCreateSkill, useDeleteSkill } from "@/lib/hooks/useSkills";
+import { getApiErrorMessage } from "@/lib/errors";
 
 export default function SkillsSection() {
   const { data: skills, isLoading: isLoadingSkills } = useGetSkills();
@@ -28,8 +29,7 @@ export default function SkillsSection() {
         setError(null);
       },
       onError: (err: unknown) => {
-        const axiosError = err as { response?: { data?: { message?: string } } };
-        setError(axiosError.response?.data?.message ?? "Failed to add skill. Please try again.");
+        setError(getApiErrorMessage(err, "Failed to add skill. Please try again."));
       },
     });
   }

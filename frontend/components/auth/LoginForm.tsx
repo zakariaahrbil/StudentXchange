@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { useLoginMutation } from "@/lib/hooks/useAuth";
+import { getApiErrorMessage } from "@/lib/errors";
 
 export default function LoginForm() {
   const { mutate: login, isPending, error } = useLoginMutation();
@@ -26,8 +27,7 @@ export default function LoginForm() {
 
   const errorMessage = (() => {
     if (!error) return null;
-    const axiosError = error as { response?: { data?: { message?: string } } };
-    return axiosError.response?.data?.message ?? "Invalid email or password. Please try again.";
+    return getApiErrorMessage(error, "Invalid email or password. Please try again.");
   })();
 
   return (

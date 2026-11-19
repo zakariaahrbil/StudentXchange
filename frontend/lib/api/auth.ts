@@ -1,32 +1,8 @@
 import api from "@/lib/axios";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
+import type { AuthResponse, RegisterResponse, UserProfile } from "@/lib/types";
 
-export interface AuthResponse {
-  accessToken: string;
-  userId: string;
-  email: string;
-  role: string;
-}
-
-export interface RegisterResponse {
-  userId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  tokenBalance: number;
-}
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  university?: string | null;
-  avatarUrl?: string | null;
-  role: string;
-  status: string;
-  createdAt: string;
-}
+export type { AuthResponse, RegisterResponse, UserProfile };
 
 export async function loginUser(data: LoginInput): Promise<AuthResponse> {
   const res = await api.post<AuthResponse>("/api/auth/login", data);

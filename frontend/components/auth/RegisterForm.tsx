@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { useRegisterMutation } from "@/lib/hooks/useAuth";
+import { getApiErrorMessage } from "@/lib/errors";
 
 interface RegisterFormProps {
   onSuccessRedirect?: () => void;
@@ -33,8 +34,7 @@ export default function RegisterForm({ onSuccessRedirect }: RegisterFormProps) {
 
   const errorMessage = (() => {
     if (!error) return null;
-    const axiosError = error as { response?: { data?: { message?: string } } };
-    return axiosError.response?.data?.message ?? "Registration failed. Please check your details and try again.";
+    return getApiErrorMessage(error, "Registration failed. Please check your details and try again.");
   })();
 
   if (isSuccess) {

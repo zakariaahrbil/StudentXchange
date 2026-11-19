@@ -1,9 +1,7 @@
 import api from "../axios";
+import type { Skill } from "@/lib/types";
 
-export interface Skill {
-    id: string;
-    name: string;
-}
+export type { Skill };
 
 export async function getSkills(query?: string): Promise<Skill[]> {
     const res = await api.get<Skill[]>("/api/skills", {

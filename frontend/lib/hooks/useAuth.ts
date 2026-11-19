@@ -13,11 +13,7 @@ import {
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useRouter } from "next/navigation";
-
-export const authKeys = {
-  all: ["auth"] as const,
-  user: () => [...authKeys.all, "user"] as const,
-};
+import { queryKeys } from "@/lib/queryKeys";
 
 export function useLoginMutation() {
   const queryClient = useQueryClient();
@@ -34,7 +30,7 @@ export function useLoginMutation() {
       } catch (err) {
         console.error("Failed to load user profile on login:", err);
       }
-      queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
       router.push("/dashboard");
     },
   });
@@ -54,7 +50,7 @@ export function useLogoutMutation() {
     mutationFn: logoutUser,
     onSuccess: () => {
       signOut();
-      queryClient.setQueryData(authKeys.user(), null);
+      queryClient.setQueryData(queryKeys.auth.user(), null);
     },
   });
 }
@@ -64,7 +60,7 @@ export function useCurrentUser() {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   return useQuery<UserProfile, Error>({
-    queryKey: authKeys.user(),
+    queryKey: queryKeys.auth.user(),
     queryFn: async () => {
       const profile = await getCurrentUser();
       if (accessToken) {
