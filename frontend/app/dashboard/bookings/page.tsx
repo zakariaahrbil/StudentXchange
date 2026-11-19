@@ -53,6 +53,18 @@ const INITIAL_DEMO_BOOKINGS: Booking[] = [
     createdAt: new Date().toISOString(),
     description: "Need help assembling a desk and moving a mattress to the 2nd floor.",
   },
+  {
+    id: "book-sample-4",
+    buyerId: "u-current",
+    skillId: "sk-3",
+    skillOwnerId: "u-103",
+    skillName: "UI/UX & Figma Design Systems",
+    price: 12,
+    realizationAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    status: "COMPLETED",
+    createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+    description: "Design review for dashboard navigation and responsive card layouts.",
+  },
 ];
 
 export default function BookingsPage() {

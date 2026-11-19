@@ -1,8 +1,10 @@
 "use client";
 
-import { Calendar, Mail, Phone } from "lucide-react";
+import { useState } from "react";
+import { Calendar, Mail, Phone, Star, CheckCircle2 } from "lucide-react";
 import type { Booking } from "@/lib/types";
 import BookingTimeline from "./BookingTimeline";
+import ReviewModal from "./ReviewModal";
 
 interface BookingCardProps {
   booking: Booking;
@@ -23,6 +25,9 @@ export default function BookingCard({
   onCancel,
   isActionPending = false,
 }: BookingCardProps) {
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+
   const isPending = booking.status === "PENDING";
   const isAccepted = booking.status === "ACCEPTED";
   const isCompleted = booking.status === "COMPLETED";
@@ -151,6 +156,26 @@ export default function BookingCard({
           </p>
         )}
 
+        {role === "learner" && isCompleted && (
+          <>
+            {hasReviewed ? (
+              <span className="inline-flex items-center gap-1.5 text-xs text-muted font-medium bg-slate-50 border border-border px-3 py-1.5">
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
+                <span>Review Submitted</span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsReviewOpen(true)}
+                className="inline-flex items-center gap-1.5 bg-ink text-white px-4 py-2 text-xs font-semibold hover:bg-ink/85 transition-colors cursor-pointer shadow-xs"
+              >
+                <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                <span>Leave a Review</span>
+              </button>
+            )}
+          </>
+        )}
+
         {/* PROVIDER ACTIONS */}
         {role === "tutor" && isPending && (
           <>
@@ -189,6 +214,14 @@ export default function BookingCard({
           </button>
         )}
       </div>
+
+      {/* ── REVIEW MODAL FOR COMPLETED BOOKINGS ── */}
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        booking={booking}
+        onSuccess={() => setHasReviewed(true)}
+      />
     </div>
   );
 }
