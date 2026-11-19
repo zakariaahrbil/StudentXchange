@@ -1,9 +1,9 @@
 import api from "@/lib/axios";
 import type { Skill, TutorSkillListing } from "@/lib/types";
 
-const MOCK_TUTORS: TutorSkillListing[] = [
+const MOCK_SERVICES: TutorSkillListing[] = [
   {
-    id: "tut-1",
+    id: "serv-1",
     userId: "u-101",
     firstName: "Sarah",
     lastName: "Chen",
@@ -13,23 +13,29 @@ const MOCK_TUTORS: TutorSkillListing[] = [
     avatarUrl: null,
     skillId: "sk-1",
     skillName: "React & Next.js Architecture",
+    description: "Code reviews, debugging complex Next.js full-stack issues, and component architecture guidance.",
     price: 15,
+    rating: 4.9,
+    reviewCount: 28,
   },
   {
-    id: "tut-2",
+    id: "serv-2",
     userId: "u-102",
-    firstName: "Marcus",
-    lastName: "Aurelius",
-    university: "MIT",
-    email: "marcus.a@mit.edu",
+    firstName: "Alex",
+    lastName: "Petrov",
+    university: "Campus Maintenance & Housing",
+    email: "alex.petrov@campus.edu",
     phoneNumber: "+1 (617) 890-3321",
     avatarUrl: null,
     skillId: "sk-2",
-    skillName: "Calculus II & Linear Algebra",
-    price: 12,
+    skillName: "Plumbing & Leak Repairs",
+    description: "Hands-on diagnostic check on sink/bathroom leaks, pipe fittings, drain clearing, and fixture adjustments.",
+    price: 18,
+    rating: 4.9,
+    reviewCount: 19,
   },
   {
-    id: "tut-3",
+    id: "serv-3",
     userId: "u-103",
     firstName: "Amira",
     lastName: "El-Sayed",
@@ -38,11 +44,14 @@ const MOCK_TUTORS: TutorSkillListing[] = [
     phoneNumber: "+1 (510) 332-9014",
     avatarUrl: null,
     skillId: "sk-3",
-    skillName: "UI/UX & Design Systems with Figma",
-    price: 10,
+    skillName: "UI/UX & Figma Design Systems",
+    description: "Interactive wireframing, component auto-layout, prototype walkthroughs, and visual hierarchy feedback.",
+    price: 12,
+    rating: 5.0,
+    reviewCount: 34,
   },
   {
-    id: "tut-4",
+    id: "serv-4",
     userId: "u-104",
     firstName: "Lucas",
     lastName: "Vance",
@@ -51,11 +60,14 @@ const MOCK_TUTORS: TutorSkillListing[] = [
     phoneNumber: "+1 (212) 554-7781",
     avatarUrl: null,
     skillId: "sk-4",
-    skillName: "Python & Data Structures",
-    price: 20,
+    skillName: "Apartment Moving & Furniture Assembly",
+    description: "Assistance with heavy lifting, moving boxes, loading vehicles, and assembling IKEA furniture quickly.",
+    price: 16,
+    rating: 4.8,
+    reviewCount: 15,
   },
   {
-    id: "tut-5",
+    id: "serv-5",
     userId: "u-105",
     firstName: "Elena",
     lastName: "Rostova",
@@ -64,11 +76,14 @@ const MOCK_TUTORS: TutorSkillListing[] = [
     phoneNumber: "+44 7911 123456",
     avatarUrl: null,
     skillId: "sk-5",
-    skillName: "Organic Chemistry & Bio-mechanics",
-    price: 18,
+    skillName: "Calculus II & Differential Equations",
+    description: "Step-by-step problem walkthroughs for Taylor series, integration by parts, and exam preparation.",
+    price: 14,
+    rating: 4.9,
+    reviewCount: 22,
   },
   {
-    id: "tut-6",
+    id: "serv-6",
     userId: "u-106",
     firstName: "David",
     lastName: "Miller",
@@ -77,36 +92,40 @@ const MOCK_TUTORS: TutorSkillListing[] = [
     phoneNumber: "+1 (416) 778-9902",
     avatarUrl: null,
     skillId: "sk-6",
-    skillName: "Machine Learning with PyTorch",
-    price: 25,
+    skillName: "Python & Data Structures",
+    description: "LeetCode interview prep, recursion trees, graph algorithms, and algorithmic complexity analysis.",
+    price: 20,
+    rating: 4.7,
+    reviewCount: 18,
   },
 ];
 
 export async function searchTutors(query?: string): Promise<TutorSkillListing[]> {
   try {
-    // Optionally fetch backend skills to enrich or supplement
     const res = await api.get<Skill[]>("/api/skills", {
       params: query ? { query } : undefined,
     });
     const backendSkills = res.data ?? [];
 
-    // Combine backend skills with mock tutor profiles if available
-    const combined = [...MOCK_TUTORS];
+    const combined = [...MOCK_SERVICES];
 
     for (const skill of backendSkills) {
       if (!combined.some((t) => t.skillId === skill.id || t.skillName.toLowerCase() === skill.name.toLowerCase())) {
         combined.unshift({
-          id: `tut-live-${skill.id}`,
+          id: `serv-live-${skill.id}`,
           userId: `u-live-${skill.id}`,
           firstName: "Peer",
-          lastName: "Tutor",
+          lastName: "Provider",
           university: "Campus Partner",
-          email: "peer.tutor@campus.edu",
+          email: "peer.provider@campus.edu",
           phoneNumber: "+1 (555) 019-2834",
           avatarUrl: null,
           skillId: skill.id,
           skillName: skill.name,
+          description: "Skill and peer service offered on campus for token exchange.",
           price: skill.price ?? 10,
+          rating: 4.8,
+          reviewCount: 12,
         });
       }
     }
@@ -119,19 +138,20 @@ export async function searchTutors(query?: string): Promise<TutorSkillListing[]>
     return combined.filter(
       (t) =>
         t.skillName.toLowerCase().includes(q) ||
+        (t.description && t.description.toLowerCase().includes(q)) ||
         t.firstName.toLowerCase().includes(q) ||
         t.lastName.toLowerCase().includes(q) ||
         (t.university && t.university.toLowerCase().includes(q))
     );
   } catch {
-    // Fallback gracefully to MOCK_TUTORS if backend is offline or unauthenticated
     if (!query || query.trim() === "") {
-      return MOCK_TUTORS;
+      return MOCK_SERVICES;
     }
     const q = query.toLowerCase().trim();
-    return MOCK_TUTORS.filter(
+    return MOCK_SERVICES.filter(
       (t) =>
         t.skillName.toLowerCase().includes(q) ||
+        (t.description && t.description.toLowerCase().includes(q)) ||
         t.firstName.toLowerCase().includes(q) ||
         t.lastName.toLowerCase().includes(q) ||
         (t.university && t.university.toLowerCase().includes(q))

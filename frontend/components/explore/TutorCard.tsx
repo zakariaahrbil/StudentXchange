@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Phone, Calendar, ArrowRight } from "lucide-react";
+import { Mail, Phone, Calendar, ArrowRight, Star } from "lucide-react";
 import type { TutorSkillListing } from "@/lib/types";
 
 interface TutorCardProps {
@@ -9,14 +9,16 @@ interface TutorCardProps {
 }
 
 export default function TutorCard({ tutor, onBook }: TutorCardProps) {
-  const initials = `${tutor.firstName?.[0] ?? "T"}${tutor.lastName?.[0] ?? "S"}`.toUpperCase();
+  const initials = `${tutor.firstName?.[0] ?? "P"}${tutor.lastName?.[0] ?? "S"}`.toUpperCase();
   const fullName = `${tutor.firstName} ${tutor.lastName}`;
+  const rating = tutor.rating ?? 4.8;
+  const reviewCount = tutor.reviewCount ?? 12;
 
   return (
-    <div className="bg-white border border-border p-5 sm:p-6 flex flex-col justify-between transition-all hover:border-border/80 hover:shadow-sm">
-      {/* ── TOP SECTION: AVATAR & NAME ── */}
+    <div className="bg-white border border-border p-5 sm:p-6 flex flex-col justify-between transition-all hover:border-border/80 hover:shadow-xs">
+      {/* ── TOP SECTION: AVATAR, NAME, RATING & PRICE ── */}
       <div>
-        <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-mint text-ink font-bold text-sm flex items-center justify-center border border-border shrink-0">
               {initials}
@@ -27,7 +29,7 @@ export default function TutorCard({ tutor, onBook }: TutorCardProps) {
                 {fullName}
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                {tutor.university ?? "Student Tutor"}
+                {tutor.university ?? "Campus Peer"}
               </p>
             </div>
           </div>
@@ -43,14 +45,31 @@ export default function TutorCard({ tutor, onBook }: TutorCardProps) {
           </div>
         </div>
 
-        {/* ── SKILL TOPIC ── */}
-        <div className="mb-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-1">
-            Skill Offered
-          </span>
-          <p className="text-sm font-bold text-ink bg-slate-50 border border-border px-3 py-2">
+        {/* ── SKILL TOPIC & RATING ROW ── */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
+              Skill / Service
+            </span>
+
+            {/* Review Rating (1 to 5) */}
+            <div className="inline-flex items-center gap-1 text-xs font-bold text-ink bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded">
+              <Star className="size-3 fill-amber-400 text-amber-500" />
+              <span>{rating.toFixed(1)}</span>
+              <span className="text-[10px] font-normal text-muted">({reviewCount})</span>
+            </div>
+          </div>
+
+          <h4 className="text-sm font-bold text-ink bg-slate-50 border border-border px-3 py-2">
             {tutor.skillName}
-          </p>
+          </h4>
+
+          {/* Service Description */}
+          {tutor.description && (
+            <p className="text-xs text-muted mt-2 leading-relaxed line-clamp-2">
+              {tutor.description}
+            </p>
+          )}
         </div>
 
         {/* ── ALWAYS VISIBLE DIRECT CONTACT ── */}
@@ -100,7 +119,7 @@ export default function TutorCard({ tutor, onBook }: TutorCardProps) {
         className="w-full bg-ink text-white py-2.5 px-4 text-xs font-semibold hover:bg-ink/85 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
       >
         <Calendar className="size-3.5" />
-        <span>Book Session</span>
+        <span>Book Service</span>
         <ArrowRight className="size-3.5" />
       </button>
     </div>

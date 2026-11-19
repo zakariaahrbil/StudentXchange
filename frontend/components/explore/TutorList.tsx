@@ -25,7 +25,7 @@ export default function TutorList({
         {[1, 2, 3, 4, 5, 6].map((idx) => (
           <div
             key={idx}
-            className="bg-white border border-border p-6 animate-pulse flex flex-col justify-between h-72"
+            className="bg-white border border-border p-6 animate-pulse flex flex-col justify-between h-80"
           >
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -52,11 +52,11 @@ export default function TutorList({
         <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-muted mb-4">
           <Search className="size-5" />
         </div>
-        <h3 className="text-base font-bold text-ink">No tutors found</h3>
+        <h3 className="text-base font-bold text-ink">No skills or services found</h3>
         <p className="text-xs text-muted mt-1 max-w-sm">
           {searchQuery
-            ? `We couldn't find any student tutors matching "${searchQuery}". Try searching for another topic like React, Calculus, or Python.`
-            : "No student tutors are currently listed. Please check back later."}
+            ? `We couldn't find any services matching "${searchQuery}". Try searching for plumbing, leaks, moving, design, or python.`
+            : "No peer services are currently listed. Please check back soon."}
         </p>
 
         {searchQuery && onClearSearch && (

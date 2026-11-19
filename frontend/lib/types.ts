@@ -82,4 +82,7 @@ export interface TutorSkillListing {
   skillId: string;
   skillName: string;
   price: number;
+  description?: string;
+  rating?: number;
+  reviewCount?: number;
 }

@@ -13,7 +13,7 @@ import {
 } from "@/lib/hooks/useBookings";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import type { Booking } from "@/lib/types";
-import { Calendar, Search, ArrowRight, ShieldCheck, Clock } from "lucide-react";
+import { Calendar, Search, ArrowRight } from "lucide-react";
 
 // Initial realistic samples for immediate UI testing & demonstration
 const INITIAL_DEMO_BOOKINGS: Booking[] = [
@@ -22,36 +22,36 @@ const INITIAL_DEMO_BOOKINGS: Booking[] = [
     buyerId: "u-current",
     skillId: "sk-1",
     skillOwnerId: "u-101",
-    skillName: "React & Next.js Architecture Mentoring",
+    skillName: "React & Next.js Architecture Review",
     price: 15,
     realizationAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
     status: "ACCEPTED",
     createdAt: new Date().toISOString(),
-    description: "Review component splitting and TanStack Query cache invalidation setup.",
+    description: "Review component architecture, server actions, and query cache setup.",
   },
   {
     id: "book-sample-2",
     buyerId: "u-current",
     skillId: "sk-2",
     skillOwnerId: "u-102",
-    skillName: "Calculus II: Series & Integration Exam Prep",
-    price: 12,
+    skillName: "Plumbing Leak Inspection & Pipe Repair",
+    price: 18,
     realizationAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
     status: "PENDING",
     createdAt: new Date().toISOString(),
-    description: "Preparing for midterm next Tuesday. Need help with convergence tests.",
+    description: "Kitchen sink has slow leak under the cabinet, need help checking the trap valve.",
   },
   {
     id: "book-sample-3",
     buyerId: "u-205",
     skillId: "sk-my-1",
     skillOwnerId: "u-current",
-    skillName: "Python Algorithms & Data Structures Tutoring",
-    price: 20,
+    skillName: "Apartment Moving & Furniture Assembly",
+    price: 16,
     realizationAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     status: "PENDING",
     createdAt: new Date().toISOString(),
-    description: "Would love help preparing for binary tree traversal coding interview problems.",
+    description: "Need help assembling a desk and moving a mattress to the 2nd floor.",
   },
 ];
 
@@ -76,8 +76,8 @@ export default function BookingsPage() {
   const allBookings = serverBookings.length > 0 ? serverBookings : localBookings;
 
   // Filter based on tab:
-  // "learner": bookings where current user is the buyer
-  // "tutor": bookings where current user is the skill owner
+  // "learner": bookings made by the current user
+  // "tutor": incoming requests for the current user's skills
   const learnerBookings = allBookings.filter(
     (b) => b.buyerId === currentUserId || b.buyerId === "u-current"
   );
@@ -91,7 +91,6 @@ export default function BookingsPage() {
   const handleAccept = (bookingId: string) => {
     acceptBooking(bookingId, {
       onError: () => {
-        // Fallback update local demo state
         setLocalBookings((prev) =>
           prev.map((b) => (b.id === bookingId ? { ...b, status: "ACCEPTED" } : b))
         );
@@ -145,10 +144,10 @@ export default function BookingsPage() {
             Sessions
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
-            Bookings &amp; Demands
+            Bookings &amp; Requests
           </h1>
           <p className="text-sm text-muted mt-1">
-            Track your scheduled learning sessions, manage incoming tutoring requests, and coordinate with peers.
+            Track scheduled peer services, manage incoming requests, and coordinate with campus peers.
           </p>
         </div>
 
@@ -157,47 +156,44 @@ export default function BookingsPage() {
           className="inline-flex items-center gap-2 bg-ink text-white px-4 py-2.5 text-xs font-semibold hover:bg-ink/85 transition-colors shrink-0"
         >
           <Search className="size-3.5" />
-          <span>Explore Tutors</span>
+          <span>Explore Skills</span>
         </Link>
       </section>
 
-      {/* ── STATS SUMMARY ── */}
+      {/* ── CLEAN STATS SUMMARY (MINIMALIST MONOCHROME) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-border p-5">
-          <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold text-muted">
-            <Clock className="size-3.5 text-amber-600" />
-            <span>Pending Requests</span>
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
+            Pending Requests
           </div>
-          <div className="text-2xl font-bold text-ink mt-1.5">
+          <div className="text-2xl font-bold text-ink mt-1">
             {pendingCount}
           </div>
           <p className="text-xs text-muted mt-1">Awaiting acceptance</p>
         </div>
 
         <div className="bg-white border border-border p-5">
-          <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold text-muted">
-            <Calendar className="size-3.5 text-emerald-600" />
-            <span>Active In Progress</span>
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
+            Active In Progress
           </div>
-          <div className="text-2xl font-bold text-ink mt-1.5">
+          <div className="text-2xl font-bold text-ink mt-1">
             {inProgressCount}
           </div>
-          <p className="text-xs text-muted mt-1">Sessions accepted &amp; scheduled</p>
+          <p className="text-xs text-muted mt-1">Services accepted &amp; scheduled</p>
         </div>
 
         <div className="bg-white border border-border p-5">
-          <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-semibold text-muted">
-            <ShieldCheck className="size-3.5 text-purple" />
-            <span>Tokens in Escrow</span>
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
+            Tokens in Escrow
           </div>
-          <div className="text-2xl font-bold text-purple mt-1.5">
-            {totalEscrowTokens} <span className="text-sm">Tokens</span>
+          <div className="text-2xl font-bold text-ink mt-1">
+            {totalEscrowTokens} <span className="text-xs font-normal text-muted">Tokens</span>
           </div>
           <p className="text-xs text-muted mt-1">Protected until completion</p>
         </div>
       </div>
 
-      {/* ── TABS (LEARNER vs TUTOR) ── */}
+      {/* ── TABS ── */}
       <BookingsTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -206,7 +202,7 @@ export default function BookingsPage() {
       />
 
       {/* ── BOOKINGS LIST ── */}
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="py-12 flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-mint border-t-transparent rounded-full animate-spin" />
@@ -216,13 +212,13 @@ export default function BookingsPage() {
             <Calendar className="size-8 text-muted mb-3" />
             <h3 className="text-base font-bold text-ink">
               {activeTab === "learner"
-                ? "No learning sessions booked yet"
-                : "No incoming tutoring requests yet"}
+                ? "No services booked yet"
+                : "No incoming requests yet"}
             </h3>
             <p className="text-xs text-muted mt-1 max-w-sm">
               {activeTab === "learner"
-                ? "Explore available student tutors to book your first 1-on-1 skill exchange session."
-                : "When other students book your skills from the marketplace, their requests will appear here."}
+                ? "Explore available campus peers to book your first skill or assistance exchange."
+                : "When peers book your skills from the marketplace, their requests will appear here."}
             </p>
 
             {activeTab === "learner" && (
@@ -230,7 +226,7 @@ export default function BookingsPage() {
                 href="/dashboard/explore"
                 className="mt-6 inline-flex items-center gap-2 bg-mint text-ink text-xs font-semibold px-5 py-2.5 hover:bg-mint/80 transition-colors"
               >
-                <span>Find a Tutor</span>
+                <span>Explore Skills</span>
                 <ArrowRight className="size-3.5" />
               </Link>
             )}
