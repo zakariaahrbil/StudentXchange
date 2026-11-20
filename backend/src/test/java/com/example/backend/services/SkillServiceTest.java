@@ -122,6 +122,27 @@ class SkillServiceTest {
         verify(reviewRepository).findAverageRatingBySkillId(skillId);
     }
 
+    @Test
+    void findsOnlySkillsOwnedByUser() {
+        UUID userId = UUID.randomUUID();
+        UUID skillId = UUID.randomUUID();
+        Skill skill = new Skill();
+        skill.setId(skillId);
+        skill.setName("Java");
+        skill.setDescription("Backend tutoring");
+        skill.setPrice(25L);
+        skill.setOwner(user(userId));
+        when(skillRepository.findByOwnerId(userId)).thenReturn(List.of(skill));
+
+        var result = skillService.findForUser(userId);
+
+        assertEquals(1, result.size());
+        assertEquals(skillId, result.get(0).id());
+        assertEquals("Java", result.get(0).name());
+        assertEquals("Backend tutoring", result.get(0).description());
+        verify(skillRepository).findByOwnerId(userId);
+    }
+
     private User user(UUID id) {
         User user = new User();
         user.setId(id);

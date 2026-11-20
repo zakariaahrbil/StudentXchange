@@ -13,5 +13,7 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
 
     Optional<Skill> findByIdAndOwnerId(UUID id, UUID ownerId);
 
+    List<Skill> findByOwnerId(UUID ownerId);
+
     List<Skill> findByNameContainingIgnoreCase(String name);
 }

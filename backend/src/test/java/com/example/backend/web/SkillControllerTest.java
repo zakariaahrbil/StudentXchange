@@ -91,6 +91,24 @@ class SkillControllerTest {
     }
 
     @Test
+    void findsSkillsForAuthenticatedPrincipal() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID skillId = UUID.randomUUID();
+        when(skillService.findForUser(userId)).thenReturn(List.of(
+                new SkillDto(skillId, "Java", "Backend tutoring", 25L)
+        ));
+
+        var result = controller.findForCurrentUser(
+                new JwtUserPrincipal(userId, "student@example.com", "STUDENT")
+        );
+
+        assertEquals(1, result.size());
+        assertEquals(skillId, result.get(0).id());
+        assertEquals("Java", result.get(0).name());
+        verify(skillService).findForUser(userId);
+    }
+
+    @Test
     void attachesSkillForAuthenticatedPrincipal() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();

@@ -60,6 +60,15 @@ public class SkillServiceImpl implements SkillService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<SkillDto> findForUser(UUID userId) {
+        return skillRepository.findByOwnerId(userId)
+                .stream()
+                .map(SkillDto::fromEntity)
+                .toList();
+    }
+
     private double roundedRating(Double rating) {
         double value = rating == null ? 0.0 : rating;
         return Math.round(value * 100.0) / 100.0;

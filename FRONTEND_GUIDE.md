@@ -151,6 +151,17 @@ Il faut éviter de lancer plusieurs refresh simultanément lorsque plusieurs req
 
 ## 3. Compétences
 
+### Mes compétences
+
+```http
+GET /api/users/me/skills
+Authorization: ******
+```
+
+Cette route retourne uniquement les compétences dont l'utilisateur authentifié est
+propriétaire. Utiliser cette route pour les pages de profil au lieu de
+`GET /api/skills`, qui retourne les compétences de tous les utilisateurs.
+
 ### Rechercher les compétences
 
 Routes publiques :

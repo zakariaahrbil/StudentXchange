@@ -32,6 +32,11 @@ public class SkillController {
         return skillService.searchUsersBySkill(skill);
     }
 
+    @GetMapping("/users/me/skills")
+    public List<SkillDto> findForCurrentUser(@AuthenticationPrincipal JwtUserPrincipal principal) {
+        return skillService.findForUser(principal.userId());
+    }
+
     @PostMapping("/users/me/skills")
     @ResponseStatus(HttpStatus.CREATED)
     public SkillDto createForCurrentUser(
