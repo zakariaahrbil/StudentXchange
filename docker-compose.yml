@@ -17,7 +17,9 @@ services:
       retries: 10
 
   backend:
-    build: .
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend-app
     depends_on:
       db:
@@ -34,7 +36,7 @@ services:
 
   frontend:
     build:
-      context: ../frontend
+      context: ./frontend
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://localhost:8080
