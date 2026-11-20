@@ -25,6 +25,8 @@ export function useLoginMutation() {
   return useMutation<AuthResponse, Error, LoginInput>({
     mutationFn: loginUser,
     onSuccess: async (data) => {
+      // Clear any prior cached data from previous sessions
+      queryClient.clear();
       useAuthStore.getState().setAccessToken(data.accessToken);
       try {
         const profile = await getCurrentUser();
@@ -46,13 +48,22 @@ export function useRegisterMutation() {
 
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
 
   return useMutation<void, Error, void>({
     mutationFn: logoutUser,
     onSuccess: () => {
       signOut();
-      queryClient.setQueryData(queryKeys.auth.user(), null);
+      // Completely wipe all cached query and mutation data so sessions never mix
+      queryClient.clear();
+      router.push("/auth");
+    },
+    onError: () => {
+      // Even if network logout fails, clear local credentials and all query caches
+      signOut();
+      queryClient.clear();
+      router.push("/auth");
     },
   });
 }

@@ -22,6 +22,11 @@ export async function getSkills(query?: string): Promise<Skill[]> {
   return res.data;
 }
 
+export async function getMySkills(): Promise<Skill[]> {
+  const res = await api.get<Skill[]>("/api/users/me/skills");
+  return res.data;
+}
+
 export async function createSkill(payload: string | CreateSkillPayload): Promise<Skill> {
   const body =
     typeof payload === "string"
