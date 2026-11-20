@@ -125,31 +125,33 @@ export async function searchTutors(query?: string): Promise<TutorSkillListing[]>
   const trimmed = query?.trim() ?? "";
 
   try {
-    let liveListings: TutorSkillListing[] = [];
+    // ── Call live backend GET /api/users/search (now accepts optional skill query)
+    const searchDtos = await searchUsersBySkill(trimmed || undefined);
+    let liveListings: TutorSkillListing[] = searchDtos.map(mapUserSkillDtoToListing);
 
-    if (trimmed !== "") {
-      // ── Query provided: use backend GET /api/users/search?skill={query}
-      const searchDtos = await searchUsersBySkill(trimmed);
-      liveListings = searchDtos.map(mapUserSkillDtoToListing);
-    } else {
-      // ── Empty query: fetch all registered skills from backend
-      const backendSkills = await getSkills();
-      liveListings = backendSkills.map((skill) => ({
-        id: `serv-live-${skill.id}`,
-        userId: `u-live-${skill.id}`,
-        firstName: "Campus",
-        lastName: "Peer",
-        university: "Campus Partner",
-        email: "peer.provider@campus.edu",
-        phoneNumber: "+1 (555) 019-2834",
-        avatarUrl: null,
-        skillId: skill.id,
-        skillName: skill.name,
-        price: skill.price ?? 10,
-        description: skill.description || "Skill and peer service offered on campus for token exchange.",
-        rating: 5.0,
-        reviewCount: 0,
-      }));
+    // Fallback if no user listings exist yet on empty query
+    if (liveListings.length === 0 && trimmed === "") {
+      try {
+        const backendSkills = await getSkills();
+        liveListings = backendSkills.map((skill) => ({
+          id: `serv-live-${skill.id}`,
+          userId: `u-live-${skill.id}`,
+          firstName: "Campus",
+          lastName: "Peer",
+          university: "Campus Partner",
+          email: "peer.provider@campus.edu",
+          phoneNumber: "+1 (555) 019-2834",
+          avatarUrl: null,
+          skillId: skill.id,
+          skillName: skill.name,
+          price: skill.price ?? 10,
+          description: skill.description || "Skill and peer service offered on campus for token exchange.",
+          rating: 5.0,
+          reviewCount: 0,
+        }));
+      } catch {
+        // ignore secondary fallback error
+      }
     }
 
     // Merge with sample peer offerings, prioritizing live backend results
