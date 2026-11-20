@@ -1,6 +1,6 @@
 # Cahier des charges — StudentXchange
 
-**Version :** 1.0  
+**Version :** 1.1  
 **Statut :** Document de conception — plateforme à développer  
 **Date :** 19 novembre 2026
 
@@ -106,13 +106,19 @@ Le refresh token devra être stocké de manière sécurisée, notamment dans un 
 L'étudiant devra pouvoir :
 
 - consulter son profil ;
-- modifier ses informations personnelles ;
+- modifier ses informations personnelles via son profil connecté ;
 - modifier sa biographie ;
 - ajouter ou modifier son avatar ;
-- consulter les compétences qu'il propose ;
+- consulter uniquement les compétences qu'il propose ;
 - consulter ou modifier son numéro de téléphone ;
+- consulter son solde disponible en tokens ;
 - consulter sa note moyenne ;
 - consulter le nombre d'échanges terminés.
+
+Les informations personnelles modifiables devront comprendre le prénom, le nom,
+l'université, la biographie, l'avatar et le numéro de téléphone. Le prénom et le
+nom devront rester obligatoires. Les champs facultatifs pourront être supprimés
+avec une valeur vide ou `null`.
 
 Un profil public pourra afficher uniquement les informations autorisées par la plateforme.
 
@@ -129,7 +135,6 @@ Une compétence devra contenir au minimum :
 - un nom ;
 - une description ;
 - un prix en tokens ;
-- une description ;
 - une catégorie ;
 - un niveau ;
 - une durée estimée ;
@@ -163,6 +168,8 @@ Les catégories pourront inclure :
 - Le prix devra être strictement supérieur à zéro.
 - Le propriétaire sera le seul à pouvoir modifier ou supprimer sa compétence.
 - Une description facultative pourra expliquer le contenu de la compétence.
+- La liste « Mes compétences » devra être filtrée par le propriétaire connecté
+  afin de ne jamais afficher les compétences d'un autre utilisateur.
 - Un utilisateur ne pourra pas réserver sa propre compétence.
 - Une compétence indisponible ne devra pas pouvoir être réservée.
 - La suppression d'une compétence ayant des réservations devra respecter une règle définie : archivage recommandé plutôt que suppression définitive.
@@ -185,6 +192,11 @@ Les utilisateurs devront pouvoir :
 - consulter le profil de son propriétaire.
 
 Les résultats devront être paginés afin de préserver les performances.
+
+La recherche des utilisateurs par compétence devra accepter un paramètre optionnel
+`skill`. Lorsque aucun paramètre n'est fourni, l'API devra retourner une liste
+vide plutôt qu'une erreur `400 Bad Request`, afin de permettre l'affichage initial
+de l'écran de découverte.
 
 ## 4.6 Portefeuille et tokens
 
