@@ -9,7 +9,7 @@ A full-stack app for students to exchange skills and earn credits.
 - Auth: JWT
 
 ## Project structure
-- `frontend/` — web app
+- `frontend/` — web application
 - `backend/` — API server
 
 ## Run the frontend
