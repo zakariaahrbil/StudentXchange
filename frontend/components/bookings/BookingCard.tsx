@@ -90,8 +90,16 @@ export default function BookingCard({
             )}
           </div>
 
-          <div className="text-xs font-semibold text-ink">
-            {booking.price} Tokens in Escrow
+          <div className="text-xs font-semibold">
+            {role === "learner" ? (
+              <span className="text-ink">
+                {isCompleted ? `${booking.price} Tokens Paid` : `${booking.price} Tokens in Escrow`}
+              </span>
+            ) : (
+              <span className={isCompleted ? "text-emerald-700 font-bold" : "text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-bold"}>
+                {isCompleted ? `+${booking.price} Tokens Earned` : `+${booking.price} Tokens to Earn`}
+              </span>
+            )}
           </div>
         </div>
 

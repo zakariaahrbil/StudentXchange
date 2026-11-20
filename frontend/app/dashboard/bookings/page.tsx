@@ -78,9 +78,16 @@ export default function BookingsPage() {
   };
 
   // Stats calculation
-  const inProgressCount = serverBookings.filter((b) => b.status === "ACCEPTED").length;
-  const pendingCount = serverBookings.filter((b) => b.status === "PENDING").length;
-  const totalEscrowTokens = serverBookings
+  const inProgressCount = displayedBookings.filter((b) => b.status === "ACCEPTED").length;
+  const pendingCount = displayedBookings.filter((b) => b.status === "PENDING").length;
+
+  // For learner (buyer): tokens held from your wallet awaiting session realization
+  const learnerEscrowTokens = learnerBookings
+    .filter((b) => b.status === "PENDING" || b.status === "ACCEPTED")
+    .reduce((acc, curr) => acc + curr.price, 0);
+
+  // For tutor (seller): tokens to be earned when sessions complete
+  const tutorPendingEarnings = tutorBookings
     .filter((b) => b.status === "PENDING" || b.status === "ACCEPTED")
     .reduce((acc, curr) => acc + curr.price, 0);
 
@@ -133,12 +140,26 @@ export default function BookingsPage() {
 
         <div className="bg-white border border-border p-5">
           <div className="text-[11px] uppercase tracking-wider font-semibold text-muted">
-            Tokens in Escrow
+            {activeTab === "learner" ? "Tokens in Escrow" : "Pending Earnings"}
           </div>
           <div className="text-2xl font-bold text-ink mt-1">
-            {totalEscrowTokens} <span className="text-xs font-normal text-muted">Tokens</span>
+            {activeTab === "learner" ? (
+              <span>
+                {learnerEscrowTokens}{" "}
+                <span className="text-xs font-normal text-muted">Tokens</span>
+              </span>
+            ) : (
+              <span className="text-emerald-700">
+                +{tutorPendingEarnings}{" "}
+                <span className="text-xs font-normal text-muted">Tokens</span>
+              </span>
+            )}
           </div>
-          <p className="text-xs text-muted mt-1">Protected until completion</p>
+          <p className="text-xs text-muted mt-1">
+            {activeTab === "learner"
+              ? "Held from your wallet until completion"
+              : "To be credited to your wallet upon completion"}
+          </p>
         </div>
       </div>
 

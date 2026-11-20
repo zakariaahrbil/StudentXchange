@@ -15,7 +15,7 @@ import {
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import { useLogoutMutation } from "@/lib/hooks/useAuth";
 import { useUserBookings } from "@/lib/hooks/useBookings";
-import { useGetSkills } from "@/lib/hooks/useSkills";
+import { useGetMySkills } from "@/lib/hooks/useSkills";
 
 export default function DashboardHomePage() {
   const user = useAuthStore((state) => state.userProfile);
@@ -23,7 +23,7 @@ export default function DashboardHomePage() {
   const { mutate: logout, isPending: isLoggingOut } = useLogoutMutation();
 
   const { data: bookings = [], isLoading: isLoadingBookings } = useUserBookings();
-  const { data: skills = [] } = useGetSkills();
+  const { data: skills = [] } = useGetMySkills();
 
   // Metrics derived from live bookings
   const pendingRequests = bookings.filter((b) => b.status === "PENDING");
