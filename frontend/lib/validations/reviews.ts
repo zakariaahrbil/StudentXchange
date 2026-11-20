@@ -8,8 +8,9 @@ export const reviewFormSchema = z.object({
     .max(5, "Rating cannot exceed 5 stars"),
   comment: z
     .string()
-    .max(500, "Review comment cannot exceed 500 characters")
-    .optional(),
+    .trim()
+    .min(1, "Please provide a feedback comment describing your session")
+    .max(2000, "Review comment cannot exceed 2000 characters"),
 });
 
 export type ReviewFormData = z.infer<typeof reviewFormSchema>;

@@ -95,7 +95,7 @@ export default function ReviewModal({
         payload: {
           bookingId: booking.id,
           rating: data.rating,
-          comment: data.comment?.trim() || undefined,
+          comment: data.comment.trim(),
         },
       },
       {
@@ -212,17 +212,17 @@ export default function ReviewModal({
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label htmlFor="review-comment" className="text-xs font-semibold text-ink">
-                Feedback Comment
+                Feedback Comment <span className="text-rose-500">*</span>
               </label>
               <span className="text-[11px] text-muted">
-                {commentValue.length} / 500
+                {commentValue.length} / 2000
               </span>
             </div>
 
             <textarea
               id="review-comment"
               rows={4}
-              maxLength={500}
+              maxLength={2000}
               placeholder="Share how the session went, peer punctuality, and quality of assistance..."
               {...register("comment")}
               className={`w-full text-xs p-3 border bg-[#FAFAFA] text-ink placeholder:text-muted/60 focus:bg-white focus:outline-none focus:border-ink resize-none transition-colors ${
@@ -248,7 +248,7 @@ export default function ReviewModal({
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || !commentValue.trim()}
               className="bg-ink text-white px-5 py-2.5 text-xs font-semibold hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
               {isPending && <Loader2 className="size-3.5 animate-spin" />}
