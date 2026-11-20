@@ -80,6 +80,17 @@ class SkillControllerTest {
     }
 
     @Test
+    void optionalSkillSearchWithoutParameterReturnsEmptyDiscoveryResult() throws Exception {
+        when(skillService.searchUsersBySkill(null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/users/search"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(skillService).searchUsersBySkill(null);
+    }
+
+    @Test
     void attachesSkillForAuthenticatedPrincipal() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();

@@ -28,7 +28,7 @@ public class SkillController {
     }
 
     @GetMapping("/users/search")
-    public List<UserSkillSearchDto> searchUsersBySkill(@RequestParam String skill) {
+    public List<UserSkillSearchDto> searchUsersBySkill(@RequestParam(required = false) String skill) {
         return skillService.searchUsersBySkill(skill);
     }
 

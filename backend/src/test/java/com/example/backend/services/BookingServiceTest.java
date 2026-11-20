@@ -67,6 +67,8 @@ class BookingServiceTest {
         assertEquals(25L, result.price());
         assertEquals(realizationAt, result.realizationAt());
         assertEquals("Practice Java streams", result.description());
+        assertEquals(buyerId, result.buyerId());
+        assertEquals(ownerId, result.skillOwnerId());
         assertEquals(75L, wallet.getBalance());
         assertEquals(25L, wallet.getHeldBalance());
         assertEquals(Type.HOLD, wallet.getTransactions().get(0).getType());
