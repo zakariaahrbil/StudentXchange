@@ -115,6 +115,28 @@ Le frontend doit afficher ce numéro uniquement dans un contexte autorisé, par 
 sur le détail d'une réservation acceptée. Il ne faut pas l'afficher publiquement
 dans les résultats de recherche sans l'accord de l'utilisateur.
 
+### Modifier le profil
+
+```http
+PUT /api/users/me/profile
+Authorization: ******
+Content-Type: application/json
+```
+
+```json
+{
+  "firstName": "Younes",
+  "lastName": "Student",
+  "university": "University",
+  "bio": "Java and tutoring",
+  "avatarUrl": "https://example.com/avatar.png",
+  "phoneNumber": "+212600000000"
+}
+```
+
+`firstName` et `lastName` sont obligatoires. Les autres champs sont facultatifs.
+Un champ facultatif vide ou `null` sera enregistré comme valeur vide supprimée.
+
 ### Interceptor recommandé
 
 Le frontend devrait :
