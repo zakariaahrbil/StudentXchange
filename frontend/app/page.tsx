@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
+import SoftAurora from "@/components/ui/SoftAurora";
 
 const steps = [
   {
@@ -69,23 +70,48 @@ export default function Home() {
       </nav>
 
       <main className="flex flex-col flex-1">
-        <section className="flex flex-col items-center justify-center text-center px-6 py-20 sm:py-28">
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] bg-mint text-ink px-3 py-1 mb-8 inline-block">
+        <section className="relative flex flex-col items-center justify-center text-center px-6 py-20 sm:py-28 overflow-hidden">
+          {/* Aurora background */}
+          <div className="absolute inset-0 z-0" style={{ width: '100%', height: '100%', position: 'absolute' }}>
+            <SoftAurora
+              speed={1.35}
+              scale={1.6}
+              brightness={0.6}
+              color1="#dafff3"
+              color2="#6eefc0"
+              bandHeight={0.55}
+              bandSpread={1}
+              enableMouseInteraction
+              mouseInfluence={0.1}
+              spectrum={0.25}
+              colorSpeed={2.4}
+              noiseFrequency={3}
+              noiseAmplitude={2.7}
+              tilt={-7}
+              octaveDecay={0.15}
+              layerOffset={0.1}
+              lightMode
+            />
+          </div>
+
+          <div className="absolute inset-0 z-[1] bg-white/10 backdrop-blur-sm" />
+
+          <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.12em] bg-mint text-ink px-3 py-1 mb-8 inline-block">
             Student skills marketplace
           </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.05] tracking-[-0.04em] text-ink max-w-2xl mb-6">
+          <h1 className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.05] tracking-[-0.04em] text-ink max-w-2xl mb-6">
             Exchange skills.
             <br />
             <span className="text-purple">Grow together.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-muted leading-relaxed max-w-md mb-10">
+          <p className="relative z-10 text-base sm:text-lg text-muted leading-relaxed max-w-md mb-10">
             Connect with students across universities. Trade your expertise,
             build new skills, and earn credits along the way.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             {!isAuthenticated ? (<>
             <Link
               href="/auth?tab=register"
