@@ -236,10 +236,23 @@ Une réservation devra être liée à :
 - le propriétaire de la compétence ;
 - le prix au moment de la réservation ;
 - la date de réalisation ;
+- une description ou demande facultative ;
 - le statut ;
 - les dates de création et de modification.
 
 Le prix devra être copié dans la réservation afin qu'une modification ultérieure du prix de la compétence n'affecte pas une réservation existante.
+
+La description de la réservation devra permettre à l'acheteur d'expliquer ses
+besoins ou les détails souhaités pour l'échange. Elle devra être limitée à
+2 000 caractères et pourra être absente.
+
+La réponse liée à une réservation devra permettre au frontend d'afficher les
+cartes des deux partenaires. Elle devra inclure pour l'acheteur et le propriétaire :
+
+- l'identifiant ;
+- le nom complet ;
+- l'adresse électronique ;
+- le numéro de téléphone, sous réserve des règles de confidentialité.
 
 ### Création d'une réservation
 
@@ -380,7 +393,8 @@ Seuls les participants de la réservation et les administrateurs autorisés pour
 
 ## 4.11 Évaluations et réputation
 
-Après une réservation `COMPLETED`, l'acheteur pourra évaluer le propriétaire.
+Après une réservation `COMPLETED`, l'acheteur pourra évaluer la compétence utilisée.
+Le propriétaire pourra ainsi obtenir une réputation liée à sa prestation.
 
 Une évaluation pourra contenir :
 
@@ -467,11 +481,16 @@ GET    /api/users/{userId}
 GET    /api/users/{userId}/skills
 ```
 
+`GET /api/users/me` devra inclure le solde disponible `tokenBalance`.
+`PUT /api/users/me/profile` devra permettre la modification complète des
+informations personnelles du profil connecté.
+
 ### Compétences
 
 ```text
 GET    /api/skills
 GET    /api/skills/{skillId}
+GET    /api/users/me/skills
 GET    /api/users/search?skill={skillName}
 POST   /api/users/me/skills
 PUT    /api/users/me/skills/{skillId}
@@ -479,8 +498,9 @@ DELETE /api/users/me/skills/{skillId}
 ```
 
 La recherche par compétence devra retourner les informations de base de l'étudiant
-et la compétence correspondante, notamment son nom, son prix et, lorsque cela est
-autorisé par les règles de confidentialité, son numéro de téléphone.
+et la compétence correspondante, notamment son nom, sa description, son prix et sa
+note globale. Le paramètre `skill` devra être facultatif. `GET /api/users/me/skills`
+devra retourner uniquement les compétences du propriétaire authentifié.
 
 ### Réservations
 
@@ -493,6 +513,13 @@ PATCH /api/bookings/{bookingId}/reject
 PATCH /api/bookings/{bookingId}/cancel
 PATCH /api/bookings/{bookingId}/complete
 ```
+
+La demande de réservation pourra contenir `realizationAt` et une `description`
+facultative limitée à 2 000 caractères.
+
+Les objets de réservation devront présenter les informations des partenaires :
+`buyerName`, `buyerEmail`, `buyerPhoneNumber`, `skillOwnerName`,
+`skillOwnerEmail` et `skillOwnerPhoneNumber`, ainsi que `description`.
 
 ### Portefeuille
 
@@ -507,7 +534,7 @@ GET /api/users/me/wallet/transactions
 GET  /api/bookings/{bookingId}/messages
 POST /api/bookings/{bookingId}/messages
 POST /api/skills/{skillId}/reviews
-GET  /api/users/{userId}/reviews
+GET  /api/skills/{skillId}/reviews
 POST /api/bookings/{bookingId}/dispute
 GET  /api/users/me/disputes
 ```
@@ -573,12 +600,21 @@ Le frontend devra :
 
 1. L'étudiant recherche une compétence.
 2. Il consulte son prix et son propriétaire.
-3. Il choisit une date future.
+3. Il choisit une date future et peut saisir une description de ses besoins.
 4. Il confirme la réservation.
 5. Le système vérifie son solde.
 6. Le prix est bloqué.
 7. La réservation passe à `PENDING`.
 8. Le propriétaire reçoit une notification.
+
+### Scénario D — Gestion du profil
+
+1. L'étudiant ouvre la page de profil.
+2. Il consulte ses informations actuelles et son solde de tokens.
+3. Il modifie ses noms, sa biographie, son université, son avatar ou son téléphone.
+4. Le backend valide les données et retourne le profil mis à jour.
+5. Sur la page « Mes compétences », l'utilisateur consulte uniquement les compétences
+   appartenant à son compte via `GET /api/users/me/skills`.
 
 ### Scénario C — Acceptation et réalisation
 
