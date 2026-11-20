@@ -6,9 +6,11 @@ import {
   registerUser,
   logoutUser,
   getCurrentUser,
+  updateUserProfile,
   type AuthResponse,
   type RegisterResponse,
   type UserProfile,
+  type UpdateProfilePayload,
 } from "@/lib/api/auth";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
@@ -23,6 +25,8 @@ export function useLoginMutation() {
   return useMutation<AuthResponse, Error, LoginInput>({
     mutationFn: loginUser,
     onSuccess: async (data) => {
+      // Clear any prior cached data from previous sessions
+      queryClient.clear();
       useAuthStore.getState().setAccessToken(data.accessToken);
       try {
         const profile = await getCurrentUser();
@@ -44,13 +48,22 @@ export function useRegisterMutation() {
 
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
 
   return useMutation<void, Error, void>({
     mutationFn: logoutUser,
     onSuccess: () => {
       signOut();
-      queryClient.setQueryData(queryKeys.auth.user(), null);
+      // Completely wipe all cached query and mutation data so sessions never mix
+      queryClient.clear();
+      router.push("/auth");
+    },
+    onError: () => {
+      // Even if network logout fails, clear local credentials and all query caches
+      signOut();
+      queryClient.clear();
+      router.push("/auth");
     },
   });
 }
@@ -70,5 +83,20 @@ export function useCurrentUser() {
     },
     enabled: !!accessToken,
     retry: false,
+  });
+}
+
+export function useUpdateProfileMutation() {
+  const queryClient = useQueryClient();
+  const setUserProfile = useAuthStore((state) => state.setUserProfile);
+
+  return useMutation<UserProfile, Error, UpdateProfilePayload>({
+    mutationKey: ["updateProfile"],
+    mutationFn: updateUserProfile,
+    onSuccess: (updatedProfile) => {
+      setUserProfile(updatedProfile);
+      queryClient.setQueryData(queryKeys.auth.user(), updatedProfile);
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
+    },
   });
 }

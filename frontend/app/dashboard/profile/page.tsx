@@ -10,7 +10,6 @@ import { useState } from "react";
 export default function ProfilePage() {
   const user = useAuthStore((state) => state.userProfile);
   const { mutate: logout, isPending: isLoggingOut } = useLogoutMutation();
-  const [showSkills, setShowSkills] = useState(false);
 
 
   const initials = `${user?.firstName?.[0] ?? "S"}${user?.lastName?.[0] ?? "X"}`.toUpperCase();
@@ -25,16 +24,6 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-      <div>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors"
-        >
-          <span>←</span>
-          <span>Back to Dashboard</span>
-        </Link>
-      </div>
-
       <section className="bg-white border border-border p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-mint text-ink font-bold text-xl sm:text-2xl flex items-center justify-center border-2 border-border shadow-sm">
@@ -85,22 +74,18 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowSkills(!showSkills)}
-              type="button"
-              className={`text-xs font-semibold px-4 py-2 transition-colors cursor-pointer ${
-                showSkills
-                  ? "bg-[#FAFAFA] text-muted border border-border hover:bg-slate-100 hover:text-ink"
-                  : "bg-mint text-ink hover:bg-mint/80"
-              }`}
+            <Link
+              href="/dashboard/explore"
+              className="text-xs font-semibold px-4 py-2 transition-colors cursor-pointer bg-mint text-ink hover:bg-mint/80 inline-flex items-center gap-1.5"
             >
-              {showSkills ? "Hide Skills" : "Explore Skills"}
-            </button>
+              <span>Explore Marketplace</span>
+              <span>→</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      { showSkills &&  <SkillsSection />}
+      <SkillsSection />
 
       {/* ── PERSONAL INFORMATION & CONTACT DETAILS ── */}
       <section className="bg-white border border-border p-6 sm:p-8 flex flex-col gap-8">

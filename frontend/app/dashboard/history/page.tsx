@@ -6,51 +6,21 @@ import { useUserBookings } from "@/lib/hooks/useBookings";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
 import type { Booking } from "@/lib/types";
 
-// Fallback sample for offline development
-const OFFLINE_SAMPLE_HISTORY: Booking[] = [
-  {
-    id: "hist-sample-1",
-    skillId: "sk-1",
-    skillName: "React & Next.js Architecture Review",
-    skillOwnerId: "u-current",
-    buyerId: "u-101",
-    price: 15,
-    realizationAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    status: "COMPLETED",
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Code review and server action debugging.",
-  },
-  {
-    id: "hist-sample-2",
-    skillId: "sk-3",
-    skillName: "UI/UX & Figma Design Systems",
-    skillOwnerId: "u-103",
-    buyerId: "u-current",
-    price: 12,
-    realizationAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    status: "COMPLETED",
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Design review for dashboard navigation.",
-  },
-];
-
 export default function HistoryPage() {
   const user = useAuthStore((state) => state.userProfile);
-  const currentUserId = user?.id ?? "u-current";
+  const currentUserId = user?.id ?? "";
 
-  const { data: serverBookings = [], isLoading, isError } = useUserBookings();
+  const { data: serverBookings = [], isLoading } = useUserBookings();
 
-  // Use live completed bookings when query succeeds; fallback to offline demo only if network error
-  const sourceBookings = isError ? OFFLINE_SAMPLE_HISTORY : serverBookings;
-  const completedBookings = sourceBookings.filter((b) => b.status === "COMPLETED");
+  const completedBookings = serverBookings.filter((b) => b.status === "COMPLETED");
 
   // Calculate real totals
   const totalEarned = completedBookings
-    .filter((b) => b.skillOwnerId === currentUserId || (isError && b.skillOwnerId === "u-current"))
+    .filter((b) => b.skillOwnerId === currentUserId)
     .reduce((acc, curr) => acc + curr.price, 0);
 
   const totalSpent = completedBookings
-    .filter((b) => b.buyerId === currentUserId || (isError && b.buyerId === "u-current"))
+    .filter((b) => b.buyerId === currentUserId)
     .reduce((acc, curr) => acc + curr.price, 0);
 
   return (
@@ -86,13 +56,6 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      {/* ── OFFLINE DEMO NOTICE ── */}
-      {isError && (
-        <div className="bg-slate-100 border border-border p-3 text-xs text-muted flex items-center justify-between">
-          <span>Backend offline. Displaying local sample exchange history.</span>
-        </div>
-      )}
-
       {/* ── SESSIONS LIST ── */}
       <section className="bg-white border border-border">
         <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
@@ -126,9 +89,7 @@ export default function HistoryPage() {
         ) : (
           <div className="divide-y divide-border">
             {completedBookings.map((item) => {
-              const isEarned =
-                item.skillOwnerId === currentUserId ||
-                (isError && item.skillOwnerId === "u-current");
+              const isEarned = item.skillOwnerId === currentUserId;
 
               const sessionDate = item.realizationAt || item.createdAt;
               const formattedDate = sessionDate

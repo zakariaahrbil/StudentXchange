@@ -22,6 +22,11 @@ export async function getSkills(query?: string): Promise<Skill[]> {
   return res.data;
 }
 
+export async function getMySkills(): Promise<Skill[]> {
+  const res = await api.get<Skill[]>("/api/users/me/skills");
+  return res.data;
+}
+
 export async function createSkill(payload: string | CreateSkillPayload): Promise<Skill> {
   const body =
     typeof payload === "string"
@@ -43,10 +48,9 @@ export async function deleteSkill(skillId: string): Promise<void> {
   await api.delete(`/api/users/me/skills/${skillId}`);
 }
 
-export async function searchUsersBySkill(skill: string): Promise<UserSkillSearchDto[]> {
-  const res = await api.get<UserSkillSearchDto[]>("/api/users/search", {
-    params: { skill },
-  });
+export async function searchUsersBySkill(skill?: string): Promise<UserSkillSearchDto[]> {
+  const params = skill && skill.trim() !== "" ? { skill: skill.trim() } : undefined;
+  const res = await api.get<UserSkillSearchDto[]>("/api/users/search", { params });
   return res.data;
 }
 

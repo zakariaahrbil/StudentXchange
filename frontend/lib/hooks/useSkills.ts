@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createSkill, deleteSkill, getSkills, updateSkill } from "../api/skills";
+import { createSkill, deleteSkill, getSkills, getMySkills, updateSkill } from "../api/skills";
 import { queryKeys } from "@/lib/queryKeys";
 import type { CreateSkillPayload } from "@/lib/types";
 
@@ -7,6 +7,13 @@ export function useGetSkills(query?: string) {
   return useQuery({
     queryKey: queryKeys.skills.list(query),
     queryFn: () => getSkills(query),
+  });
+}
+
+export function useGetMySkills() {
+  return useQuery({
+    queryKey: queryKeys.skills.my(),
+    queryFn: getMySkills,
   });
 }
 

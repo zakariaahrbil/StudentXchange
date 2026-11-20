@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Plus, Trash2, Loader2, AlertCircle } from "lucide-react";
-import { useGetSkills, useCreateSkill, useDeleteSkill } from "@/lib/hooks/useSkills";
+import { useGetMySkills, useCreateSkill, useDeleteSkill } from "@/lib/hooks/useSkills";
 import { getApiErrorMessage } from "@/lib/errors";
 
 export default function SkillsSection() {
-  const { data: skills, isLoading: isLoadingSkills } = useGetSkills();
+  const { data: skills, isLoading: isLoadingSkills } = useGetMySkills();
   const { mutate: createSkill, isPending: isCreatingSkill } = useCreateSkill();
   const { mutate: deleteSkill, isPending: isDeletingSkill } = useDeleteSkill();
 

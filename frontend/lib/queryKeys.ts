@@ -6,6 +6,7 @@ export const queryKeys = {
   skills: {
     all: ["skills"] as const,
     list: (query?: string) => [...queryKeys.skills.all, "list", query ?? ""] as const,
+    my: () => [...queryKeys.skills.all, "my"] as const,
   },
   tutors: {
     all: ["tutors"] as const,
