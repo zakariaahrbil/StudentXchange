@@ -39,6 +39,15 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export interface UpdateProfilePayload {
+  firstName: string;
+  lastName: string;
+  university?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  phoneNumber?: string | null;
+}
+
 export interface Skill {
   id: string;
   name: string;
@@ -62,8 +71,14 @@ export type BookingStatus =
 export interface Booking {
   id: string;
   buyerId: string;
+  buyerName?: string | null;
+  buyerEmail?: string | null;
+  buyerPhoneNumber?: string | null;
   skillId: string;
   skillOwnerId: string;
+  skillOwnerName?: string | null;
+  skillOwnerEmail?: string | null;
+  skillOwnerPhoneNumber?: string | null;
   skillName: string;
   price: number;
   realizationAt: string;

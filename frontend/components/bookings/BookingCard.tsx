@@ -46,12 +46,18 @@ export default function BookingCard({
 
   // Partner display details (contact is ALWAYS visible)
   const partnerRoleLabel = role === "learner" ? "Provider" : "Requester";
+  const partnerName =
+    role === "learner"
+      ? (booking.skillOwnerName || "Campus Peer")
+      : (booking.buyerName || "Campus Peer");
   const partnerEmail =
     role === "learner"
-      ? `peer.${booking.skillOwnerId.slice(0, 5)}@campus.edu`
-      : `student.${booking.buyerId.slice(0, 5)}@campus.edu`;
+      ? (booking.skillOwnerEmail || null)
+      : (booking.buyerEmail || null);
   const partnerPhone =
-    role === "learner" ? "+1 (555) 314-8821" : "+1 (555) 792-1140";
+    role === "learner"
+      ? (booking.skillOwnerPhoneNumber || null)
+      : (booking.buyerPhoneNumber || null);
 
   return (
     <div className="bg-white border border-border p-5 sm:p-6 flex flex-col justify-between gap-5 transition-all">
@@ -109,26 +115,41 @@ export default function BookingCard({
 
         {/* ── ALWAYS-VISIBLE PEER CONTACT ── */}
         <div className="mt-4 pt-3 border-t border-border flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
-            {partnerRoleLabel} Contact (Always Visible)
-          </span>
+          <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted font-bold">
+            <span>{partnerRoleLabel}: <strong className="text-ink font-semibold capitalize">{partnerName}</strong></span>
+            <span className="text-[9px] bg-slate-100 px-1.5 py-0.5 border border-border">Contact details</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1 text-xs">
-            <a
-              href={`mailto:${partnerEmail}`}
-              className="flex items-center gap-2 bg-[#FAFAFA] border border-border px-3 py-2 text-ink hover:border-ink transition-colors truncate"
-            >
-              <Mail className="size-3.5 shrink-0 text-muted" />
-              <span className="truncate font-medium">{partnerEmail}</span>
-            </a>
+            {partnerEmail ? (
+              <a
+                href={`mailto:${partnerEmail}`}
+                className="flex items-center gap-2 bg-[#FAFAFA] border border-border px-3 py-2 text-ink hover:border-ink transition-colors truncate"
+              >
+                <Mail className="size-3.5 shrink-0 text-muted" />
+                <span className="truncate font-medium">{partnerEmail}</span>
+              </a>
+            ) : (
+              <div className="flex items-center gap-2 bg-[#FAFAFA] border border-border/60 px-3 py-2 text-muted truncate">
+                <Mail className="size-3.5 shrink-0 text-muted/60" />
+                <span className="truncate font-medium italic">No email provided</span>
+              </div>
+            )}
 
-            <a
-              href={`tel:${partnerPhone}`}
-              className="flex items-center gap-2 bg-[#FAFAFA] border border-border px-3 py-2 text-ink hover:border-ink transition-colors"
-            >
-              <Phone className="size-3.5 shrink-0 text-muted" />
-              <span className="font-medium">{partnerPhone}</span>
-            </a>
+            {partnerPhone ? (
+              <a
+                href={`tel:${partnerPhone}`}
+                className="flex items-center gap-2 bg-[#FAFAFA] border border-border px-3 py-2 text-ink hover:border-ink transition-colors"
+              >
+                <Phone className="size-3.5 shrink-0 text-muted" />
+                <span className="font-medium">{partnerPhone}</span>
+              </a>
+            ) : (
+              <div className="flex items-center gap-2 bg-[#FAFAFA] border border-border/60 px-3 py-2 text-muted">
+                <Phone className="size-3.5 shrink-0 text-muted/60" />
+                <span className="font-medium italic">No phone listed</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
