@@ -60,7 +60,7 @@ class SkillControllerTest {
     void searchesUsersBySkill() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID skillId = UUID.randomUUID();
-        when(skillService.searchUsersBySkill("java"))
+        when(skillService.searchUsersBySkill("java", null))
                 .thenReturn(List.of(new UserSkillSearchDto(
                         userId, "Younes", "Student", "University", null,
                         "+212 600-000000", skillId, "Java", "Java tutoring", 25L, 4.5
@@ -81,13 +81,13 @@ class SkillControllerTest {
 
     @Test
     void optionalSkillSearchWithoutParameterReturnsEmptyDiscoveryResult() throws Exception {
-        when(skillService.searchUsersBySkill(null)).thenReturn(List.of());
+        when(skillService.searchUsersBySkill(null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/users/search"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
 
-        verify(skillService).searchUsersBySkill(null);
+        verify(skillService).searchUsersBySkill(null, null);
     }
 
     @Test

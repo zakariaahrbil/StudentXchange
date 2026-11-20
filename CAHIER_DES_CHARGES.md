@@ -196,7 +196,8 @@ Les résultats devront être paginés afin de préserver les performances.
 La recherche des utilisateurs par compétence devra accepter un paramètre optionnel
 `skill`. Lorsque aucun paramètre n'est fourni, l'API devra retourner une liste
 vide plutôt qu'une erreur `400 Bad Request`, afin de permettre l'affichage initial
-de l'écran de découverte.
+de l'écran de découverte. Lorsqu'un utilisateur authentifié effectue la recherche,
+ses propres compétences devront être exclues des résultats.
 
 ## 4.6 Portefeuille et tokens
 

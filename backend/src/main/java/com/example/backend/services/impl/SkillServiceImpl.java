@@ -48,12 +48,20 @@ public class SkillServiceImpl implements SkillService {
     @Override
     @Transactional(readOnly = true)
     public List<UserSkillSearchDto> searchUsersBySkill(String skillQuery) {
+        return searchUsersBySkill(skillQuery, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSkillSearchDto> searchUsersBySkill(String skillQuery, UUID searcherId) {
         String normalizedQuery = skillQuery == null ? "" : skillQuery.trim();
         if (normalizedQuery.isBlank()) {
             return List.of();
         }
         return skillRepository.findByNameContainingIgnoreCase(normalizedQuery)
                 .stream()
+                .filter(skill -> searcherId == null
+                        || !skill.getOwner().getId().equals(searcherId))
                 .map(skill -> UserSkillSearchDto.fromSkill(
                         skill, roundedRating(reviewRepository.findAverageRatingBySkillId(skill.getId()))
                 ))

@@ -255,6 +255,8 @@ Réponse :
 ```
 
 La recherche est insensible à la casse et retourne une ligne par compétence correspondante.
+Lorsqu'un utilisateur authentifié lance la recherche, ses propres compétences sont
+exclues des résultats afin qu'il ne trouve pas sa propre offre.
 `skillRating` est la moyenne des notes reçues par cette compétence, sur 5. Une
 compétence sans avis retourne `0.0`.
 Le numéro de téléphone étant une donnée personnelle, l'interface doit l'afficher avec

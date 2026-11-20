@@ -143,6 +143,31 @@ class SkillServiceTest {
         verify(skillRepository).findByOwnerId(userId);
     }
 
+    @Test
+    void excludesSearcherFromUserSkillResults() {
+        UUID searcherId = UUID.randomUUID();
+        UUID otherOwnerId = UUID.randomUUID();
+        Skill ownSkill = new Skill();
+        ownSkill.setId(UUID.randomUUID());
+        ownSkill.setName("Java");
+        ownSkill.setPrice(20L);
+        ownSkill.setOwner(user(searcherId));
+        Skill otherSkill = new Skill();
+        otherSkill.setId(UUID.randomUUID());
+        otherSkill.setName("Java");
+        otherSkill.setPrice(25L);
+        otherSkill.setOwner(user(otherOwnerId));
+        when(skillRepository.findByNameContainingIgnoreCase("java"))
+                .thenReturn(List.of(ownSkill, otherSkill));
+        when(reviewRepository.findAverageRatingBySkillId(otherSkill.getId())).thenReturn(4.0);
+
+        var result = skillService.searchUsersBySkill("java", searcherId);
+
+        assertEquals(1, result.size());
+        assertEquals(otherOwnerId, result.get(0).userId());
+        verify(reviewRepository, never()).findAverageRatingBySkillId(ownSkill.getId());
+    }
+
     private User user(UUID id) {
         User user = new User();
         user.setId(id);

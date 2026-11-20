@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -28,8 +29,12 @@ public class SkillController {
     }
 
     @GetMapping("/users/search")
-    public List<UserSkillSearchDto> searchUsersBySkill(@RequestParam(required = false) String skill) {
-        return skillService.searchUsersBySkill(skill);
+    public List<UserSkillSearchDto> searchUsersBySkill(
+            @RequestParam(required = false) String skill,
+            @AuthenticationPrincipal JwtUserPrincipal principal
+    ) {
+        UUID searcherId = principal != null ? principal.userId() : null;
+        return skillService.searchUsersBySkill(skill, searcherId);
     }
 
     @GetMapping("/users/me/skills")

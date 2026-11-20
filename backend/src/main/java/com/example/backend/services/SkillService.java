@@ -10,6 +10,9 @@ public interface SkillService {
 
     List<SkillDto> search(String query);
     List<UserSkillSearchDto> searchUsersBySkill(String skillQuery);
+    default List<UserSkillSearchDto> searchUsersBySkill(String skillQuery, UUID searcherId) {
+        return searchUsersBySkill(skillQuery);
+    }
     List<SkillDto> findForUser(UUID userId);
 
     SkillDto createForUser(UUID userId, String skillName, String description, Long price);
