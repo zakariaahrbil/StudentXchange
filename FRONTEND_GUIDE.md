@@ -179,7 +179,8 @@ Réponse :
     "id": "skill-id",
     "name": "Java",
     "description": "Cours et accompagnement en Java",
-    "price": 25
+    "price": 25,
+    "averageRating": 4.5
   }
 ]
 ```

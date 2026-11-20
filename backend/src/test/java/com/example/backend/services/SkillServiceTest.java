@@ -144,6 +144,23 @@ class SkillServiceTest {
     }
 
     @Test
+    void includesAverageRatingInOwnedSkillDto() {
+        UUID userId = UUID.randomUUID();
+        UUID skillId = UUID.randomUUID();
+        Skill skill = new Skill();
+        skill.setId(skillId);
+        skill.setName("Java");
+        skill.setPrice(25L);
+        skill.setOwner(user(userId));
+        when(skillRepository.findByOwnerId(userId)).thenReturn(List.of(skill));
+        when(reviewRepository.findAverageRatingBySkillId(skillId)).thenReturn(4.5);
+
+        var result = skillService.findForUser(userId);
+
+        assertEquals(4.5, result.get(0).averageRating());
+    }
+
+    @Test
     void excludesSearcherFromUserSkillResults() {
         UUID searcherId = UUID.randomUUID();
         UUID otherOwnerId = UUID.randomUUID();

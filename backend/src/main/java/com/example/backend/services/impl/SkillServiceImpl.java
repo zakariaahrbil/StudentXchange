@@ -41,7 +41,10 @@ public class SkillServiceImpl implements SkillService {
                 : skillRepository.findByNameContainingIgnoreCase(normalizedQuery);
 
         return skills.stream()
-                .map(SkillDto::fromEntity)
+                .map(skill -> SkillDto.fromEntity(
+                        skill,
+                        roundedRating(reviewRepository.findAverageRatingBySkillId(skill.getId()))
+                ))
                 .toList();
     }
 
@@ -73,7 +76,10 @@ public class SkillServiceImpl implements SkillService {
     public List<SkillDto> findForUser(UUID userId) {
         return skillRepository.findByOwnerId(userId)
                 .stream()
-                .map(SkillDto::fromEntity)
+                .map(skill -> SkillDto.fromEntity(
+                        skill,
+                        roundedRating(reviewRepository.findAverageRatingBySkillId(skill.getId()))
+                ))
                 .toList();
     }
 
