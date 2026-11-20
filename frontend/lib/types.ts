@@ -53,6 +53,7 @@ export interface Skill {
   name: string;
   description?: string | null;
   price?: number;
+  averageRating?: number | null;
 }
 
 export interface CreateSkillPayload {
@@ -99,7 +100,7 @@ export interface TutorSkillListing {
   firstName: string;
   lastName: string;
   university?: string | null;
-  email: string;
+  email?: string | null;
   phoneNumber?: string | null;
   avatarUrl?: string | null;
   skillId: string;
@@ -138,5 +139,5 @@ export interface ReviewDto {
 export interface CreateReviewPayload {
   bookingId: string;
   rating: number;
-  comment?: string;
+  comment: string;
 }

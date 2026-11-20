@@ -5,18 +5,29 @@ import Link from "next/link";
 import SkillSearchBar from "@/components/explore/SkillSearchBar";
 import TutorList from "@/components/explore/TutorList";
 import BookingModal from "@/components/bookings/BookingModal";
+import ServiceDetailModal from "@/components/explore/ServiceDetailModal";
 import { useTutors } from "@/lib/hooks/useTutors";
 import type { TutorSkillListing } from "@/lib/types";
 import { Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDetailListing, setSelectedDetailListing] = useState<TutorSkillListing | null>(null);
   const [selectedListing, setSelectedListing] = useState<TutorSkillListing | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   const { data: listings = [], isLoading } = useTutors(searchQuery);
 
   const handleBook = (listing: TutorSkillListing) => {
+    setSelectedListing(listing);
+  };
+
+  const handleViewDetails = (listing: TutorSkillListing) => {
+    setSelectedDetailListing(listing);
+  };
+
+  const handleBookFromDetails = (listing: TutorSkillListing) => {
+    setSelectedDetailListing(null);
     setSelectedListing(listing);
   };
 
@@ -84,8 +95,17 @@ export default function ExplorePage() {
         tutors={listings}
         isLoading={isLoading}
         onBook={handleBook}
+        onViewDetails={handleViewDetails}
         searchQuery={searchQuery}
         onClearSearch={() => setSearchQuery("")}
+      />
+
+      {/* ── SERVICE DETAIL & REVIEWS MODAL ── */}
+      <ServiceDetailModal
+        isOpen={Boolean(selectedDetailListing)}
+        onClose={() => setSelectedDetailListing(null)}
+        tutor={selectedDetailListing}
+        onBook={handleBookFromDetails}
       />
 
       {/* ── BOOKING MODAL ── */}

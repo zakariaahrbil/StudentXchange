@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Loader2, AlertCircle, Star } from "lucide-react";
 import { useGetMySkills, useCreateSkill, useDeleteSkill } from "@/lib/hooks/useSkills";
 import { getApiErrorMessage } from "@/lib/errors";
 
@@ -234,11 +234,19 @@ export default function SkillsSection() {
                   )}
                 </div>
 
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 flex flex-col items-end gap-1">
                   <span className="text-xs font-bold text-ink">
                     {skill.price ?? 10}{" "}
                     <span className="text-[10px] text-purple font-semibold">Tokens</span>
                   </span>
+                  {typeof skill.averageRating === "number" && skill.averageRating > 0 ? (
+                    <div className="inline-flex items-center gap-1 text-[11px] font-bold text-ink bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded">
+                      <Star className="size-3 fill-amber-400 text-amber-500" />
+                      <span>{skill.averageRating.toFixed(1)}</span>
+                    </div>
+                  ) : (
+                    <span className="text-[10px] text-muted">No reviews yet</span>
+                  )}
                 </div>
               </div>
 
