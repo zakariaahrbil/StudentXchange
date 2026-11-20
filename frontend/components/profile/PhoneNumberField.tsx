@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Mail, Check, AlertCircle } from "lucide-react";
+import { Phone, Mail, Check, AlertCircle, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +9,8 @@ import {
   type ProfilePhoneInput,
 } from "@/lib/validations/profile";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
+import { useUpdateProfileMutation } from "@/lib/hooks/useAuth";
+import { getApiErrorMessage } from "@/lib/errors";
 
 interface PhoneNumberFieldProps {
   initialPhoneNumber?: string | null;
@@ -21,8 +23,10 @@ export default function PhoneNumberField({
 }: PhoneNumberFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const user = useAuthStore((state) => state.userProfile);
-  const setUserProfile = useAuthStore((state) => state.setUserProfile);
+
+  const { mutate: updateProfile, isPending: isSaving } = useUpdateProfileMutation();
 
   const {
     register,
@@ -37,22 +41,44 @@ export default function PhoneNumberField({
   });
 
   const onSubmit = (data: ProfilePhoneInput) => {
-    if (user) {
-      // Optimistically update the in-memory user profile
-      const updatedProfile = {
-        ...user,
-        phoneNumber: data.phoneNumber || null,
-      };
-      setUserProfile(updatedProfile);
-    }
+    if (!user) return;
+    setErrorMessage(null);
 
-    setSavedSuccess(true);
-    setIsEditing(false);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    const trimmedPhone =
+      data.phoneNumber && data.phoneNumber.trim() !== ""
+        ? data.phoneNumber.trim()
+        : null;
+
+    updateProfile(
+      {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        university: user.university ?? undefined,
+        bio: user.bio ?? undefined,
+        avatarUrl: user.avatarUrl ?? undefined,
+        phoneNumber: trimmedPhone,
+      },
+      {
+        onSuccess: () => {
+          setSavedSuccess(true);
+          setIsEditing(false);
+          setTimeout(() => setSavedSuccess(false), 3000);
+        },
+        onError: (err) => {
+          setErrorMessage(
+            getApiErrorMessage(
+              err,
+              "Failed to update phone number. Please verify the format."
+            )
+          );
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
     reset({ phoneNumber: initialPhoneNumber ?? "" });
+    setErrorMessage(null);
     setIsEditing(false);
   };
 
@@ -122,7 +148,8 @@ export default function PhoneNumberField({
                   type="tel"
                   placeholder="+1 555-0199 or 0612345678"
                   {...register("phoneNumber")}
-                  className="w-full px-3 py-1.5 bg-white border border-border text-sm text-ink outline-none focus:border-purple"
+                  disabled={isSubmitting || isSaving}
+                  className="w-full px-3 py-1.5 bg-white border border-border text-sm text-ink outline-none focus:border-purple disabled:opacity-50"
                 />
                 {errors.phoneNumber && (
                   <p className="text-[11px] font-medium text-rose-600 flex items-center gap-1">
@@ -130,19 +157,27 @@ export default function PhoneNumberField({
                     {errors.phoneNumber.message}
                   </p>
                 )}
+                {errorMessage && (
+                  <p className="text-[11px] font-medium text-rose-600 flex items-center gap-1">
+                    <AlertCircle className="size-3" />
+                    {errorMessage}
+                  </p>
+                )}
 
                 <div className="flex items-center gap-2 mt-1">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="bg-ink text-white text-xs font-semibold px-3 py-1.5 hover:bg-ink/85 transition-colors cursor-pointer"
+                    disabled={isSubmitting || isSaving}
+                    className="bg-ink text-white text-xs font-semibold px-3 py-1.5 hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
                   >
-                    Save
+                    {isSaving && <Loader2 className="size-3 animate-spin" />}
+                    <span>{isSaving ? "Saving…" : "Save"}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="text-xs font-semibold text-muted hover:text-ink px-2 py-1.5 cursor-pointer"
+                    disabled={isSubmitting || isSaving}
+                    className="text-xs font-semibold text-muted hover:text-ink px-2 py-1.5 cursor-pointer disabled:opacity-50"
                   >
                     Cancel
                   </button>

@@ -6,9 +6,11 @@ import {
   registerUser,
   logoutUser,
   getCurrentUser,
+  updateUserProfile,
   type AuthResponse,
   type RegisterResponse,
   type UserProfile,
+  type UpdateProfilePayload,
 } from "@/lib/api/auth";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
 import { useAuthStore } from "@/lib/hooks/useAuthStore";
@@ -70,5 +72,20 @@ export function useCurrentUser() {
     },
     enabled: !!accessToken,
     retry: false,
+  });
+}
+
+export function useUpdateProfileMutation() {
+  const queryClient = useQueryClient();
+  const setUserProfile = useAuthStore((state) => state.setUserProfile);
+
+  return useMutation<UserProfile, Error, UpdateProfilePayload>({
+    mutationKey: ["updateProfile"],
+    mutationFn: updateUserProfile,
+    onSuccess: (updatedProfile) => {
+      setUserProfile(updatedProfile);
+      queryClient.setQueryData(queryKeys.auth.user(), updatedProfile);
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
+    },
   });
 }
