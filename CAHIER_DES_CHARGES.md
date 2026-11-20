@@ -1,20 +1,20 @@
 # Cahier des charges — StudentXchange
 
-**Version :** 1.1  
-**Statut :** Document de conception — plateforme à développer  
-**Date :** 19 novembre 2026
+**Version :** 2.0
+**Statut :** Cahier des charges final — plateforme réalisée
+**Date :** 20 novembre 2026
 
 ## 1. Présentation du projet
 
-StudentXchange sera une plateforme destinée aux étudiants qui souhaitent proposer, rechercher et échanger des compétences et des services.
+StudentXchange est une plateforme destinée aux étudiants qui proposent, recherchent et échangent des compétences et des services.
 
-La plateforme fonctionnera avec une monnaie virtuelle appelée **token**. Un étudiant pourra proposer une compétence avec un prix en tokens. Un autre étudiant pourra réserver cette compétence, convenir d'une date de réalisation, puis confirmer la fin de l'échange.
+La plateforme utilise une monnaie virtuelle appelée **token**. Un étudiant propose une compétence avec un prix en tokens. Un autre étudiant réserve cette compétence, choisit une date de réalisation et participe à l'échange jusqu'à sa finalisation.
 
-L'objectif sera de créer un environnement fiable, sécurisé et simple d'utilisation pour favoriser l'entraide entre étudiants.
+La plateforme fournit un environnement fiable, sécurisé et simple d'utilisation pour favoriser l'entraide entre étudiants.
 
 ## 2. Objectifs
 
-La plateforme devra permettre de :
+La plateforme permet de :
 
 - créer un compte étudiant ;
 - gérer un profil personnel ;
@@ -28,6 +28,25 @@ La plateforme devra permettre de :
 - évaluer les échanges terminés ;
 - faciliter la communication entre les participants ;
 - permettre à l'administration de modérer la plateforme.
+
+## 2.1 État d'avancement
+
+Les fonctionnalités suivantes sont réalisées dans la version actuelle :
+
+| Domaine | Fonctionnalités réalisées |
+|---|---|
+| Compte | inscription, connexion, JWT, refresh cookie, déconnexion |
+| Profil | consultation, modification, téléphone, biographie, avatar et université |
+| Compétences | création, modification, suppression, description, prix et liste personnelle |
+| Recherche | recherche de compétences, recherche d'utilisateurs par compétence et exclusion du chercheur |
+| Réservations | création, acceptation, refus, annulation, finalisation et date de réalisation |
+| Portefeuille | solde disponible, solde bloqué, transactions et transfert sécurisé |
+| Évaluations | avis sur une compétence, note de 1 à 5 et moyenne globale |
+| Déploiement | PostgreSQL, pgAdmin, backend Docker et frontend Docker |
+
+La messagerie interne, les catégories administrables, les litiges complets et les
+notifications externes restent des évolutions prévues tant qu'ils ne disposent pas
+d'un flux implémenté et déployé.
 
 ## 3. Utilisateurs et rôles
 
@@ -462,7 +481,7 @@ L'espace d'administration devra proposer :
 
 Toutes les actions administratives sensibles devront être journalisées.
 
-## 5. API à prévoir
+## 5. API implémentée
 
 ### Authentification
 
@@ -524,20 +543,31 @@ Les objets de réservation devront présenter les informations des partenaires :
 
 ### Portefeuille
 
+Le solde disponible est retourné par `GET /api/users/me` dans
+`tokenBalance`. Les opérations de portefeuille sont réalisées lors des réservations
+et finalisations. Les endpoints dédiés à l'historique détaillé du portefeuille
+peuvent être ajoutés dans une évolution ultérieure.
+
+### Évaluations
+
 ```text
-GET /api/users/me/wallet
-GET /api/users/me/wallet/transactions
+POST /api/skills/{skillId}/reviews
+GET  /api/skills/{skillId}/reviews
 ```
 
-### Messages, évaluations et litiges
+Une évaluation appartient à une compétence. Le `bookingId` transmis dans la
+demande sert uniquement de preuve qu'une réservation terminée permet à l'acheteur
+de laisser son avis.
+
+### Routes évolutives non encore implémentées
 
 ```text
 GET  /api/bookings/{bookingId}/messages
 POST /api/bookings/{bookingId}/messages
-POST /api/skills/{skillId}/reviews
-GET  /api/skills/{skillId}/reviews
 POST /api/bookings/{bookingId}/dispute
 GET  /api/users/me/disputes
+GET  /api/users/me/wallet
+GET  /api/users/me/wallet/transactions
 ```
 
 ## 6. Exigences de sécurité
@@ -563,29 +593,35 @@ La plateforme devra :
 
 ### Backend
 
-Le backend devra :
+Le backend implémenté :
 
-- exposer une API REST ;
-- utiliser une base de données relationnelle ;
-- versionner les migrations de schéma ;
-- séparer contrôleurs, services, repositories et entités ;
-- centraliser la gestion des erreurs ;
-- fournir une documentation API ;
-- produire des logs exploitables ;
-- respecter les principes de transaction et d'intégrité des données.
+- expose une API REST Spring Boot ;
+- utilise PostgreSQL et Flyway ;
+- sépare contrôleurs, services, repositories et entités ;
+- centralise les erreurs dans un gestionnaire global ;
+- utilise Spring Security avec JWT ;
+- protège les opérations financières par des transactions ;
+- utilise le verrouillage optimiste du portefeuille ;
+- fournit les migrations versionnées V1 à V9.
+
+La pile backend comprend Java 21, Spring Boot 4, Spring Data JPA, Hibernate,
+Spring Security, PostgreSQL 16 et Docker.
 
 ### Frontend
 
-Le frontend devra :
+Le frontend implémenté :
 
-- être responsive ;
-- fonctionner sur ordinateur, tablette et mobile ;
-- proposer des états de chargement, erreur et absence de données ;
-- gérer l'expiration des sessions ;
-- afficher clairement les statuts ;
-- empêcher les doubles soumissions ;
-- respecter les règles d'accessibilité ;
-- fournir des messages d'erreur compréhensibles.
+- utilise Next.js, React et TypeScript ;
+- utilise Tailwind CSS et les composants UI du projet ;
+- fonctionne sur ordinateur, tablette et mobile ;
+- propose des pages d'authentification, de découverte, de réservations, d'historique
+  et de profil ;
+- gère l'expiration des sessions avec refresh token ;
+- affiche les statuts de réservation ;
+- empêche les doubles soumissions ;
+- respecte les règles d'accessibilité ;
+- fournit des messages d'erreur compréhensibles ;
+- est compilé en mode standalone et déployable dans Docker.
 
 ## 8. Scénarios principaux
 
@@ -669,6 +705,10 @@ Codes attendus :
 
 ## 10. Tests et critères d'acceptation
 
+La plateforme doit disposer de tests unitaires, de contrôleurs et d'intégration
+pour les domaines d'inscription, authentification, compétences, réservations,
+profil, portefeuille et évaluations.
+
 ### Tests fonctionnels
 
 Les tests devront couvrir :
@@ -717,6 +757,7 @@ Le projet sera considéré comme prêt lorsque :
 
 - application backend ;
 - application frontend ;
+- services Docker pour PostgreSQL, backend, frontend et pgAdmin ;
 - schéma de base de données ;
 - migrations versionnées ;
 - documentation API ;

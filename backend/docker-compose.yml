@@ -44,5 +44,20 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_FLYWAY_ENABLED: "true"
 
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8080
+    container_name: frontend-app
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+
 volumes:
   pgdata:
